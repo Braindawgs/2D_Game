@@ -8,6 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
+    gdb \
     libsdl2-dev \
     libsdl2-image-dev \
     libsdl2-ttf-dev \

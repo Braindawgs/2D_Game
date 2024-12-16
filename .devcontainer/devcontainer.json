@@ -12,5 +12,6 @@
       "ms-azuretools.vscode-docker"
     ],
     "forwardPorts": [],
-    "workspaceFolder": "/usr/src/app"
+    "workspaceFolder": "/usr/src/app",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/usr/src/app,type=bind,consistency=cached"
   }

@@ -7,6 +7,8 @@ project(2DGameTemplate VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 # Define source files
 set(SOURCE_FILES
     source/main.cpp
