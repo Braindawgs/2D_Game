@@ -1,0 +1,16 @@
+{
+    "name": "2D Game Dev Environment",
+    "build": {
+      "dockerfile": "../Dockerfile"
+    },
+    "settings": {
+      "terminal.integrated.defaultProfile.linux": "bash"
+    },
+    "extensions": [
+      "ms-vscode.cpptools",
+      "ms-vscode.cmake-tools",
+      "ms-azuretools.vscode-docker"
+    ],
+    "forwardPorts": [],
+    "workspaceFolder": "/usr/src/app"
+  }
