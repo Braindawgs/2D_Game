@@ -12,6 +12,7 @@ set(CMAKE_BUILD_TYPE Debug)
 # Define source files
 set(SOURCE_FILES
     source/main.cpp
+    source/Movement.cpp
 
 )
 
