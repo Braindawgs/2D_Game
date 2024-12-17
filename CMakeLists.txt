@@ -16,9 +16,7 @@ set(SOURCE_FILES
 )
 
 # Define header files
-set(HEADER_FILES
-    include/Game.hpp
-)
+include_directories(include)
 
 # Add executable
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
