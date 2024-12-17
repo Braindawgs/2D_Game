@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.7)
 
 # Project name
 project(2DGameTemplate VERSION 1.0)
@@ -12,7 +12,10 @@ set(CMAKE_BUILD_TYPE Debug)
 # Define source files
 set(SOURCE_FILES
     source/main.cpp
+    source/Snek.cpp
     source/Movement.cpp
+    source/Apples.cpp
+    source/Renderer.cpp
 
 )
 
@@ -22,15 +25,8 @@ include_directories(include)
 # Add executable
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 
-# SDL2 settings
-find_package(SDL2 REQUIRED)
-
-if (SDL2_FOUND)
-    include_directories(${SDL2_INCLUDE_DIRS})
-    target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES})
-else()
-    message(FATAL_ERROR "SDL2 library not found. Please install SDL2 and set SDL2_DIR correctly.")
-endif()
+find_package(SDL2 REQUIRED COMPONENTS SDL2_image SDL2_mixer SDL2_ttf)
+target_link_libraries(${PROJECT_NAME} SDL2 SDL2_mixer SDL2_image SDL2_ttf)
 
 # Set output directories
 set_target_properties(${PROJECT_NAME} PROPERTIES
