@@ -3,10 +3,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
-
+#include <vector>
+#include <algorithm>
+#include <string>
 
 class Renderer
-{
+{       
     public:
 
         /**
@@ -39,8 +41,31 @@ class Renderer
         void Clear();
 
         void Render(int posX, int posY, SDL_Texture& texture);
-
         void Render(SDL_Texture& texture);
+        void Render(int posX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textcolor);
+
+        void RenderPlainRect(SDL_Rect& rect, SDL_Color const& colorscheme);
+
+        template <typename Container>
+        void RenderPlainRectArray(Container& rectV, SDL_Color const& colorscheme, bool monocolor)
+        {
+            if(monocolor)
+            {
+                SDL_SetRenderDrawColor(m_rndr, colorscheme.r, colorscheme.g, colorscheme.b, colorscheme.a);
+            }
+
+            std::for_each(rectV.begin(), rectV.end(), [&](auto& rect)
+            {
+                if (!monocolor)
+                {
+                    SDL_SetRenderDrawColor(m_rndr, colorscheme.r, colorscheme.g, colorscheme.b, colorscheme.a);
+                }
+
+                SDL_RenderFillRect(m_rndr, &rect);
+            });
+        }
+
+
 
         /**
          * @brief Presents render.

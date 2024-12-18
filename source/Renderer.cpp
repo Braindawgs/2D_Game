@@ -57,12 +57,7 @@ void Renderer::Clear()
 
 void Renderer::Render(int posX, int posY, SDL_Texture& texture)
 {
-    SDL_Rect source = 
-    {
-        .x = 0,
-        .y = 0
-    };
-
+    SDL_Rect source = {0, 0};
     SDL_QueryTexture(&texture, NULL, NULL, &source.x, &source.y);
 
     SDL_Rect dest{posX, posY, source.w, source.h};
@@ -72,6 +67,24 @@ void Renderer::Render(int posX, int posY, SDL_Texture& texture)
 void Renderer::Render(SDL_Texture& texture)
 {
     Render(0, 0, texture);
+}
+
+void Renderer::Render(int posX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textColor)
+{
+    auto textSurface = TTF_RenderText_Blended(font, txt.c_str(), textColor);
+    auto textTexture = SDL_CreateTextureFromSurface(m_rndr, textSurface);
+    SDL_FreeSurface(textSurface); // Free the surface since the texture is created
+
+    SDL_Rect source = {0, 0, textSurface->w, textSurface->h};
+    SDL_Rect dest = {posX, posY, source.w, source.h};
+
+    SDL_RenderCopy(m_rndr, textTexture, &source, &dest);
+}
+
+void Renderer::RenderPlainRect(SDL_Rect& rect, SDL_Color const& colorscheme)
+{
+    SDL_SetRenderDrawColor(m_rndr, colorscheme.r, colorscheme.g, colorscheme.b, colorscheme.a);
+    SDL_RenderFillRect(m_rndr, &rect);
 }
 
 void Renderer::Display()
