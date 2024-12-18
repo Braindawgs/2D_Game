@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <deque>
 
+#include "Movement.hpp"
+
 namespace Snek
 {
     class Player
@@ -11,6 +13,8 @@ namespace Snek
         Player(int windowX, int windowY) : m_snekHead{windowX/2, windowY/2, m_snekW, m_snekH} {}
         ~Player(){}
 
+
+        
         // TODO: temp public, will be moved to main.
         // Sizes
         const int m_snekW = 10;
@@ -34,11 +38,15 @@ namespace Snek
          */
         size_t getSize();
 
+        void movementInput(SDL_Event& evt);
+
         void updateBody();
+        void updatePosition();
         void checkCollisionSelf();
     private:
 
         int m_size = 1;
+        snakeDirection m_dir = NONE;
     };
 
 

@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <deque>
 
-#include "Movement.hpp"
 #include "Snek.hpp"
 #include "Apples.hpp"
 #include "Renderer.hpp"
@@ -25,8 +24,7 @@ int main(int argc, char* argv[])
     Apples apples(APPLE_COUNT);
 
     bool running = true;
-
-    SnakeMove::snakeDirection dir;
+    
     // Initialize SDL
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) 
     {
@@ -40,10 +38,6 @@ int main(int argc, char* argv[])
     }
 
     Renderer rd(WINDOW_SIZE, WINDOW_SIZE);
-
-
-
-    // Movement -> move to classes
     while(running)
     {
         while(SDL_PollEvent(&evt))
@@ -53,10 +47,10 @@ int main(int argc, char* argv[])
                 running = false;
             }
 
-            SnakeMove::movementSelecter(evt, dir);
+            snek.movementInput(evt);
         }
 
-        SnakeMove::movementExec(snek.m_snekHead, dir);
+        snek.updatePosition();
 
         if (apples.checkCollision(snek.m_snekHead))
         {
@@ -73,15 +67,14 @@ int main(int argc, char* argv[])
         {
             std::cerr << "Failed to load default font: " << TTF_GetError() << std::endl;
         }
-        SDL_Color textColor = {255, 255, 255, 255}; // White color
         std::string const cScore = "Score:";
         std::string score = std::to_string(apples.appleCount());
 
+
         // Clear screen
         rd.clear();
-
         // Draw scoreboard
-        rd.render(0, 0, score, font, textColor);
+        rd.render(0, 0, (cScore+score), font, {255, 255, 255, 255});
         // Draw snek
         rd.renderPlainRectArray(snek.m_snekBody, {0, 200, 100, 255}, true);
         // Draw apples

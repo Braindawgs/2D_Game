@@ -1,10 +1,7 @@
 #include <SDL2/SDL.h>
 #include <Movement.hpp>
 
-namespace SnakeMove
-{
-
-    void movementSelecter(SDL_Event& evt, snakeDirection& dir)
+    void movementSelector(SDL_Event& evt, snakeDirection& dir)
     {
         if (SDL_KEYDOWN == evt.type)
         {
@@ -31,7 +28,6 @@ namespace SnakeMove
                     dir = snakeDirection::RIGHT;
                 }
                 break;
-
             }
         }
     }
@@ -64,4 +60,3 @@ namespace SnakeMove
             break;
         }
     }
-}

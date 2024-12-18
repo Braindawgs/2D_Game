@@ -40,3 +40,13 @@ void Player::checkCollisionSelf()
             }
         }
 }
+
+void Player::movementInput(SDL_Event& evt)
+{
+    movementSelector(evt, m_dir);
+}
+
+void Player::updatePosition()
+{
+    movementExec(m_snekHead, m_dir);
+}
