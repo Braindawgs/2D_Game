@@ -58,7 +58,7 @@ void Renderer::clear()
 void Renderer::render(int posX, int posY, SDL_Texture& texture)
 {
     SDL_Rect source = {0, 0};
-    SDL_QueryTexture(&texture, NULL, NULL, &source.x, &source.y);
+    SDL_QueryTexture(&texture, NULL, NULL, &source.w, &source.h);
 
     SDL_Rect dest{posX, posY, source.w, source.h};
     SDL_RenderCopy(m_rndr, &texture, &source, &dest);
