@@ -24,18 +24,18 @@ namespace Snek
          * 
          * @param size +/- size or size to be set to.
          */
-        void ChangeSize(int size);
-        void SetSizeTo(int size);
+        void changeSize(int size);
+        void setSizeTo(int size);
 
         /**
          * @brief Get the Size object.
          * 
          * @return size_t size of the snake.
          */
-        size_t GetSize();
+        size_t getSize();
 
-        void UpdateBody();
-        void CheckCollisionSelf();
+        void updateBody();
+        void checkCollisionSelf();
     private:
 
         int m_size = 1;

@@ -11,14 +11,14 @@ Apples::Apples(size_t count)
     }
 }
 
-bool Apples::CheckCollision(SDL_Rect const& entity)
+bool Apples::checkCollision(SDL_Rect const& entity)
 {
     bool retVal = false;
     for (auto it = m_apples.begin(); it != m_apples.end();) 
     {
         if ((entity.x == it->x) && (entity.y == it->y))
         {
-            DeleteApple(*it);
+            deleteApple(*it);
             retVal = true;
             break;
         }
@@ -30,13 +30,13 @@ bool Apples::CheckCollision(SDL_Rect const& entity)
     return retVal;
 }
 
-void Apples::DeleteApple(SDL_Rect& entity)
+void Apples::deleteApple(SDL_Rect& entity)
 {
     std::swap(entity, m_apples.back()); // Move the element to the end
     m_apples.pop_back();             // Remove the last element
 }
 
-size_t Apples::AppleCount()
+size_t Apples::appleCount()
 {
     return m_apples.size();
 }

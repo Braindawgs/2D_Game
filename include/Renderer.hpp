@@ -38,27 +38,27 @@ class Renderer
          * @brief Sets render to black and clears render.
          * 
          */
-        void Clear();
+        void clear();
 
-        void Render(int posX, int posY, SDL_Texture& texture);
-        void Render(SDL_Texture& texture);
-        void Render(int posX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textcolor);
+        void render(int posX, int posY, SDL_Texture& texture);
+        void render(SDL_Texture& texture);
+        void render(int posX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textColor);
 
-        void RenderPlainRect(SDL_Rect& rect, SDL_Color const& colorscheme);
+        void renderPlainRect(SDL_Rect& rect, SDL_Color const& colorscheme);
 
         template <typename Container>
-        void RenderPlainRectArray(Container& rectV, SDL_Color const& colorscheme, bool monocolor)
+        void renderPlainRectArray(Container& rectV, SDL_Color const& colorScheme, bool monoColor)
         {
-            if(monocolor)
+            if(monoColor)
             {
-                SDL_SetRenderDrawColor(m_rndr, colorscheme.r, colorscheme.g, colorscheme.b, colorscheme.a);
+                SDL_SetRenderDrawColor(m_rndr, colorScheme.r, colorScheme.g, colorScheme.b, colorScheme.a);
             }
 
             std::for_each(rectV.begin(), rectV.end(), [&](auto& rect)
             {
-                if (!monocolor)
+                if (!monoColor)
                 {
-                    SDL_SetRenderDrawColor(m_rndr, colorscheme.r, colorscheme.g, colorscheme.b, colorscheme.a);
+                    SDL_SetRenderDrawColor(m_rndr, colorScheme.r, colorScheme.g, colorScheme.b, colorScheme.a);
                 }
 
                 SDL_RenderFillRect(m_rndr, &rect);
@@ -71,7 +71,7 @@ class Renderer
          * @brief Presents render.
          * 
          */
-        void Display();
+        void display();
 
 
     private:

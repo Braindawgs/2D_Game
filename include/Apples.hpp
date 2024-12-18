@@ -17,19 +17,19 @@ class Apples
          * @param entity Collidiong object. 
          * @return true If object colided.
          */
-        bool CheckCollision(SDL_Rect const& entity);
+        bool checkCollision(SDL_Rect const& entity);
 
     	/**
     	 * @brief Apple count.
     	 * 
     	 * @return size_t count.
     	 */
-        size_t AppleCount();
+        size_t appleCount();
 
         size_t m_count;
         std::vector<SDL_Rect> m_apples;
 
     private:
 
-        void DeleteApple(SDL_Rect& entity);
+        void deleteApple(SDL_Rect& entity);
 };

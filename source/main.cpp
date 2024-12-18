@@ -58,13 +58,13 @@ int main(int argc, char* argv[])
 
         SnakeMove::movementExec(snek.m_snekHead, dir);
 
-        if (apples.CheckCollision(snek.m_snekHead))
+        if (apples.checkCollision(snek.m_snekHead))
         {
-            snek.ChangeSize(5);
+            snek.changeSize(5);
         }
 
-        snek.CheckCollisionSelf();
-        snek.UpdateBody();
+        snek.checkCollisionSelf();
+        snek.updateBody();
 
     
         //TODO: Scoring module, just testing, remove 
@@ -75,19 +75,19 @@ int main(int argc, char* argv[])
         }
         SDL_Color textColor = {255, 255, 255, 255}; // White color
         std::string const cScore = "Score:";
-        std::string score = std::to_string(apples.AppleCount());
+        std::string score = std::to_string(apples.appleCount());
 
         // Clear screen
-        rd.Clear();
+        rd.clear();
 
         // Draw scoreboard
-        rd.Render(0, 0, score, font, textColor);
+        rd.render(0, 0, score, font, textColor);
         // Draw snek
-        rd.RenderPlainRectArray(snek.m_snekBody, {0, 200, 100, 255}, true);
+        rd.renderPlainRectArray(snek.m_snekBody, {0, 200, 100, 255}, true);
         // Draw apples
-        rd.RenderPlainRectArray(apples.m_apples, {255, 0, 0, 255}, true);
+        rd.renderPlainRectArray(apples.m_apples, {255, 0, 0, 255}, true);
        
-        rd.Display();
+        rd.display();
         SDL_Delay(35);
     }
 

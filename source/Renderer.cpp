@@ -47,7 +47,7 @@ void Renderer::Create(int windowW, int windowH)
 }
 #endif
 
-void Renderer::Clear()
+void Renderer::clear()
 {
     // Set color to black
     SDL_SetRenderDrawColor(m_rndr, 0, 0, 0, 255);
@@ -55,7 +55,7 @@ void Renderer::Clear()
     SDL_RenderClear(m_rndr);
 }
 
-void Renderer::Render(int posX, int posY, SDL_Texture& texture)
+void Renderer::render(int posX, int posY, SDL_Texture& texture)
 {
     SDL_Rect source = {0, 0};
     SDL_QueryTexture(&texture, NULL, NULL, &source.x, &source.y);
@@ -64,12 +64,12 @@ void Renderer::Render(int posX, int posY, SDL_Texture& texture)
     SDL_RenderCopy(m_rndr, &texture, &source, &dest);
 }
 
-void Renderer::Render(SDL_Texture& texture)
+void Renderer::render(SDL_Texture& texture)
 {
-    Render(0, 0, texture);
+    render(0, 0, texture);
 }
 
-void Renderer::Render(int posX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textColor)
+void Renderer::render(int posX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textColor)
 {
     auto textSurface = TTF_RenderText_Blended(font, txt.c_str(), textColor);
     auto textTexture = SDL_CreateTextureFromSurface(m_rndr, textSurface);
@@ -81,13 +81,13 @@ void Renderer::Render(int posX, int posY, std::string const& txt, TTF_Font* font
     SDL_RenderCopy(m_rndr, textTexture, &source, &dest);
 }
 
-void Renderer::RenderPlainRect(SDL_Rect& rect, SDL_Color const& colorscheme)
+void Renderer::renderPlainRect(SDL_Rect& rect, SDL_Color const& colorscheme)
 {
     SDL_SetRenderDrawColor(m_rndr, colorscheme.r, colorscheme.g, colorscheme.b, colorscheme.a);
     SDL_RenderFillRect(m_rndr, &rect);
 }
 
-void Renderer::Display()
+void Renderer::display()
 {
     SDL_RenderPresent(m_rndr);
 }

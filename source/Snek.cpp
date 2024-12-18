@@ -2,7 +2,7 @@
 
 using namespace Snek;
 
-void Player::ChangeSize(int size)
+void Player::changeSize(int size)
 {
     if ((m_size + size) > 1)
     {
@@ -10,32 +10,32 @@ void Player::ChangeSize(int size)
     }
 }
 
-void Player::SetSizeTo(int size)
+void Player::setSizeTo(int size)
 {
     m_size = size;
 }
 
-size_t Player::GetSize()
+size_t Player::getSize()
 {
     return m_size;
 }
 
-void Player::UpdateBody()
+void Player::updateBody()
 {
     m_snekBody.push_front(m_snekHead);
-    while(m_snekBody.size() > GetSize())
+    while(m_snekBody.size() > getSize())
     {
         m_snekBody.pop_back();
     }
 }
 
-void Player::CheckCollisionSelf()
+void Player::checkCollisionSelf()
 {
         for (auto& snekBody : m_snekBody)
         {
             if ((m_snekHead.x == snekBody.x) && (m_snekHead.y == snekBody.y))
             {
-                SetSizeTo(1);
+                setSizeTo(1);
                 break;
             }
         }
