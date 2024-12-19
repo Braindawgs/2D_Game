@@ -45,6 +45,8 @@ int main(int argc, char* argv[])
     Renderer rd(WINDOW_SIZE, WINDOW_SIZE);
 
     auto backGroundTexture = rd.loadTexture("assets/background/background_whatever.png");
+    //auto appleTexture = rd.loadTexture("assets/textures/apples.png");
+    apples.populateTexture(rd);
     while(running)
     {
         while(SDL_PollEvent(&evt))
@@ -84,10 +86,21 @@ int main(int argc, char* argv[])
         rd.renderFitWindow(*backGroundTexture);
         // Draw scoreboard
         rd.render(0, 0, (cScore+score), font, {255, 255, 255, 255});
+
         // Draw snek
-        rd.renderPlainRectArray(snek.getSnekBody(), {0, 255, 0, 255}, true);
+        rd.renderPlainRect(snek.getSnekHead(), {0, 255, 0, 255});
+        rd.renderPlainRectArray(snek.getSnekBody(), {50, 200, 50, 255}, true);
+        rd.renderPlainRect(snek.getSnekTail(), {255, 255, 0, 255});
         // Draw apples
-        rd.renderPlainRectArray(apples.m_apples, {255, 0, 0, 255}, true);
+        std::for_each(apples.m_apples.begin(), apples.m_apples.end(), [&](auto& apple)
+        {
+            rd.renderFromSprite(apple.color.texture, apple.color.spriteX, apple.color.spriteY, 
+                                apple.color.spriteW, apple.color.spriteH,
+                                apple.rect.x, apple.rect.y, apple.rect.w, apple.rect.w);
+        });
+
+        // Apple textute move to somewhere
+        //rd.renderFromSprite(appleTexture, 17, 125, 73, 94, 100, 100, 10, 10);
        
         rd.display();
         SDL_Delay(35);
