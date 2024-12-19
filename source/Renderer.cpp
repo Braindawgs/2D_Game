@@ -1,5 +1,7 @@
-#include "Renderer.hpp"
+#include <SDL2/SDL_image.h>
 #include <stdexcept>
+#include <iostream>
+#include "Renderer.hpp"
 
 Renderer::Renderer(int windowW, int windowH)
 {
@@ -55,9 +57,21 @@ void Renderer::clear()
     SDL_RenderClear(m_rndr);
 }
 
+SDL_Texture* Renderer::loadTexture(std::string const& path)
+{
+    auto texture = IMG_LoadTexture(m_rndr, path.c_str());
+
+    if (nullptr == texture)
+    {
+        std::cerr << "Failed to load texture" << std::endl;
+    }
+
+    return texture;
+}
+
 void Renderer::render(int posX, int posY, SDL_Texture& texture)
 {
-    SDL_Rect source = {0, 0};
+    SDL_Rect source = {0, 0, 0, 0};
     SDL_QueryTexture(&texture, NULL, NULL, &source.w, &source.h);
 
     SDL_Rect dest{posX, posY, source.w, source.h};
@@ -79,6 +93,11 @@ void Renderer::render(int posX, int posY, std::string const& txt, TTF_Font* font
     SDL_Rect dest = {posX, posY, source.w, source.h};
 
     SDL_RenderCopy(m_rndr, textTexture, &source, &dest);
+}
+
+void Renderer::renderFitWindow(SDL_Texture& texture)
+{
+    SDL_RenderCopy(m_rndr, &texture, NULL, NULL);
 }
 
 void Renderer::renderPlainRect(SDL_Rect& rect, SDL_Color const& colorscheme)

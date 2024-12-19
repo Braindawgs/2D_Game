@@ -37,7 +37,14 @@ int main(int argc, char* argv[])
         throw std::runtime_error("TTF Init failed\n");
     }
 
+    if (IMG_Init(IMG_INIT_PNG) == 0)
+    {
+        throw std::runtime_error("IMG Init failed\n");
+    }
+
     Renderer rd(WINDOW_SIZE, WINDOW_SIZE);
+
+    auto backGroundTexture = rd.loadTexture("assets/background/background_whatever.png");
     while(running)
     {
         while(SDL_PollEvent(&evt))
@@ -52,7 +59,7 @@ int main(int argc, char* argv[])
 
         snek.updatePosition();
 
-        if (apples.checkCollision(snek.m_snekHead))
+        if (apples.checkCollision(snek.getSnekHead()))
         {
             snek.changeSize(5);
         }
@@ -73,10 +80,12 @@ int main(int argc, char* argv[])
 
         // Clear screen
         rd.clear();
+
+        rd.renderFitWindow(*backGroundTexture);
         // Draw scoreboard
         rd.render(0, 0, (cScore+score), font, {255, 255, 255, 255});
         // Draw snek
-        rd.renderPlainRectArray(snek.m_snekBody, {0, 200, 100, 255}, true);
+        rd.renderPlainRectArray(snek.getSnekBody(), {0, 255, 0, 255}, true);
         // Draw apples
         rd.renderPlainRectArray(apples.m_apples, {255, 0, 0, 255}, true);
        

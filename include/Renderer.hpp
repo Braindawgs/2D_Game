@@ -40,10 +40,13 @@ class Renderer
          */
         void clear();
 
+        SDL_Texture* loadTexture(std::string const& path);
+
         void render(int posX, int posY, SDL_Texture& texture);
         void render(SDL_Texture& texture);
         void render(int posX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textColor);
 
+        void renderFitWindow(SDL_Texture& texture);
         void renderPlainRect(SDL_Rect& rect, SDL_Color const& colorscheme);
 
         template <typename Container>
