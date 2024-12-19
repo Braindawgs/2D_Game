@@ -41,6 +41,16 @@ void Player::checkCollisionSelf()
         }
 }
 
+SDL_Rect& Player::getSnekHead()
+{
+    return m_snekHead;
+}
+
+std::deque<SDL_Rect>& Player::getSnekBody()
+{
+    return m_snekBody;
+}
+
 void Player::movementInput(SDL_Event& evt)
 {
     movementSelector(evt, m_dir);
