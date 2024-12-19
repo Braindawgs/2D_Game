@@ -43,8 +43,12 @@ class Renderer
         SDL_Texture* loadTexture(std::string const& path);
 
         void render(int posX, int posY, SDL_Texture& texture);
+        void render(int posX, int posY, int sizeW, int sizeH, SDL_Texture& texture);
         void render(SDL_Texture& texture);
         void render(int posX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textColor);
+
+        void renderFromSprite(SDL_Texture* spriteSheet, int srcX, int srcY, int srcW, int srcH, 
+                             int destX, int destY, int destW, int destH);
 
         void renderFitWindow(SDL_Texture& texture);
         void renderPlainRect(SDL_Rect& rect, SDL_Color const& colorscheme);
@@ -68,6 +72,14 @@ class Renderer
             });
         }
 
+        template <typename Container>
+        void renderPlainRectTextureArray(Container& rectV, SDL_Texture& texture)
+        {
+            std::for_each(rectV.begin(), rectV.end(), [&](auto& rect)
+            {
+                SDL_RenderCopy(m_rndr, &texture, nullptr, &rectV);
+            });
+        }
 
 
         /**

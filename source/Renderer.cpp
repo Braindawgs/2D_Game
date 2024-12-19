@@ -83,6 +83,12 @@ void Renderer::render(SDL_Texture& texture)
     render(0, 0, texture);
 }
 
+void Renderer::render(int posX, int posY, int sizeW, int sizeH, SDL_Texture& texture)
+{
+    SDL_Rect dest{posX, posY, sizeW, sizeH};
+    SDL_RenderCopy(m_rndr, &texture, nullptr, &dest);
+}
+ 
 void Renderer::render(int posX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textColor)
 {
     auto textSurface = TTF_RenderText_Blended(font, txt.c_str(), textColor);
@@ -93,6 +99,18 @@ void Renderer::render(int posX, int posY, std::string const& txt, TTF_Font* font
     SDL_Rect dest = {posX, posY, source.w, source.h};
 
     SDL_RenderCopy(m_rndr, textTexture, &source, &dest);
+}
+
+void Renderer::renderFromSprite(SDL_Texture* spriteSheet, int srcX, int srcY, int srcW, int srcH, 
+                                int destX, int destY, int destW, int destH)
+{
+    SDL_Rect srcRect = {srcX, srcY, srcW, srcH};
+
+    // Destination rectangle (where on the screen to render it)
+    SDL_Rect destRect = {destX, destY, destW, destH};
+
+    // Render the selected portion of the sprite sheet
+    SDL_RenderCopy(m_rndr, spriteSheet, &srcRect, &destRect);
 }
 
 void Renderer::renderFitWindow(SDL_Texture& texture)
