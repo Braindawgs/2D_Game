@@ -58,14 +58,14 @@ int main(int argc, char* argv[])
         }
 
         snek.updatePosition();
+        snek.updateMovement();
 
         if (apples.checkCollision(snek.getSnekHead()))
         {
-            snek.changeSize(5);
+            snek.snekChangeSize(5);
         }
 
         snek.checkCollisionSelf();
-        snek.updateBody();
 
     
         //TODO: Scoring module, just testing, remove 
