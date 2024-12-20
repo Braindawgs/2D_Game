@@ -35,7 +35,7 @@ class Apples
          * @param entity Collidiong object. 
          * @return true If object colided.
          */
-        bool checkCollision(SDL_Rect const& entity);
+        bool checkAppleCollision(SDL_Rect const& entity);
 
         void populateTexture(Renderer& rd);
 
@@ -56,5 +56,5 @@ class Apples
         spriteTexture greenApple = {102, 124, 73, 94, appleTextureApple, nullptr};
         spriteTexture yellowApple = {186, 124, 73, 94, appleTextureApple, nullptr};
 
-        void deleteApple(AppleData& entity);
+        void deleteApple(std::vector<AppleData>::iterator entity);
 };

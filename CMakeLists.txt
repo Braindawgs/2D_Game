@@ -16,6 +16,7 @@ set(SOURCE_FILES
     source/Movement.cpp
     source/Apples.cpp
     source/Renderer.cpp
+    source/Utils.cpp
 
 )
 

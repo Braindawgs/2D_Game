@@ -1,5 +1,6 @@
 #include <random>
 #include "Apples.hpp"
+#include "Utils.hpp"
 
 Apples::Apples(size_t count)
 {
@@ -19,14 +20,15 @@ void Apples::populateTexture(Renderer& rd)
     });
 }
 
-bool Apples::checkCollision(SDL_Rect const& entity)
+bool Apples::checkAppleCollision(SDL_Rect const& entity)
 {
     bool retVal = false;
+
     for (auto it = m_apples.begin(); it != m_apples.end();) 
     {
-        if ((entity.x == it->rect.x) && (entity.y == it->rect.y))
+        if (checkCollision(entity, it->rect))
         {
-            deleteApple(*it);
+            deleteApple(it);
             retVal = true;
             break;
         }
@@ -38,10 +40,13 @@ bool Apples::checkCollision(SDL_Rect const& entity)
     return retVal;
 }
 
-void Apples::deleteApple(AppleData& entity)
+void Apples::deleteApple(std::vector<AppleData>::iterator entity)
 {
-    std::swap(entity, m_apples.back()); // Move the element to the end
-    m_apples.pop_back();             // Remove the last element
+    if (nullptr != entity->color.texture)
+    {
+        SDL_DestroyTexture(entity->color.texture);
+    }
+    m_apples.erase(entity);
 }
 
 size_t Apples::appleCount()
