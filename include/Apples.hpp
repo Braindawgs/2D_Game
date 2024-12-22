@@ -4,20 +4,11 @@
 #include <vector>
 #include <algorithm>
 #include "Renderer.hpp"
+#include "Utils.hpp"
 
 
 class Apples
 {
-    struct spriteTexture
-    {
-        int spriteX;
-        int spriteY;
-        int spriteW;
-        int spriteH;
-        const char* sprite;
-        SDL_Texture* texture;
-    };
-
     struct AppleData
     {
         SDL_Rect rect;
@@ -37,6 +28,11 @@ class Apples
          */
         bool checkAppleCollision(SDL_Rect const& entity);
 
+        /**
+         * @brief Loads apple textures. 
+         * 
+         * @param rd Renderer.
+         */
         void populateTexture(Renderer& rd);
 
     	/**
@@ -50,6 +46,7 @@ class Apples
         std::vector<AppleData> m_apples;
 
     private:
+
 
         const char* appleTextureApple = "assets/textures/apples.png";
         spriteTexture redApple = {17, 124, 73, 94, appleTextureApple, nullptr};

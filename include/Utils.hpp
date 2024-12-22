@@ -2,6 +2,17 @@
 
 #include <SDL2/SDL.h>
 
+struct spriteTexture
+{
+    int spriteX;
+    int spriteY;
+    int spriteW;
+    int spriteH;
+    const char* sprite;
+    SDL_Texture* texture;
+};
+
+
 /**
  * @brief Collision detection between 2 rect obj
  * 
