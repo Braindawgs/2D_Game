@@ -50,6 +50,13 @@ class Renderer
         void renderFromSprite(SDL_Texture* spriteSheet, int srcX, int srcY, int srcW, int srcH, 
                              int destX, int destY, int destW, int destH);
 
+        void renderFromSpriteWithRotation(SDL_Texture* spriteSheet, 
+                    int srcX, int srcY, int srcW, int srcH, 
+                    int destX, int destY, int destW, int destH, 
+                    double angle, 
+                    SDL_Point* rotationCenter = nullptr, 
+                    SDL_RendererFlip flip = SDL_FLIP_NONE);
+
         void renderFitWindow(SDL_Texture& texture);
         void renderPlainRect(SDL_Rect& rect, SDL_Color const& colorscheme);
 

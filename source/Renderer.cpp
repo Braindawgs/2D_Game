@@ -63,7 +63,7 @@ SDL_Texture* Renderer::loadTexture(std::string const& path)
 
     if (nullptr == texture)
     {
-        std::cerr << "Failed to load texture" << std::endl;
+        std::cerr << "Failed to load texture: "<< path << std::endl;
     }
 
     return texture;
@@ -101,6 +101,7 @@ void Renderer::render(int posX, int posY, std::string const& txt, TTF_Font* font
     SDL_RenderCopy(m_rndr, textTexture, &source, &dest);
 }
 
+// TODO: all of the parameters fit in rect use it bruh.
 void Renderer::renderFromSprite(SDL_Texture* spriteSheet, int srcX, int srcY, int srcW, int srcH, 
                                 int destX, int destY, int destW, int destH)
 {
@@ -111,6 +112,24 @@ void Renderer::renderFromSprite(SDL_Texture* spriteSheet, int srcX, int srcY, in
 
     // Render the selected portion of the sprite sheet
     SDL_RenderCopy(m_rndr, spriteSheet, &srcRect, &destRect);
+}
+
+
+void Renderer::renderFromSpriteWithRotation(SDL_Texture* spriteSheet, 
+                                            int srcX, int srcY, int srcW, int srcH, 
+                                            int destX, int destY, int destW, int destH, 
+                                            double angle, 
+                                            SDL_Point* rotationCenter, 
+                                            SDL_RendererFlip flip)
+{
+    // Source rectangle (portion of the sprite sheet)
+    SDL_Rect srcRect = { srcX, srcY, srcW, srcH };
+
+    // Destination rectangle (where on the screen to render it)
+    SDL_Rect destRect = { destX, destY, destW, destH };
+
+    // Render the selected portion of the sprite sheet with rotation
+    SDL_RenderCopyEx(m_rndr, spriteSheet, &srcRect, &destRect, angle, rotationCenter, flip);
 }
 
 void Renderer::renderFitWindow(SDL_Texture& texture)
