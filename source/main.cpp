@@ -30,13 +30,11 @@ int main(int argc, char* argv[])
     {
         throw std::runtime_error("SDL Init failed\n");
     }
-
     // Initialize TTF
     if (TTF_Init() != 0) 
     {
         throw std::runtime_error("TTF Init failed\n");
     }
-
     if (IMG_Init(IMG_INIT_PNG) == 0)
     {
         throw std::runtime_error("IMG Init failed\n");
@@ -44,9 +42,12 @@ int main(int argc, char* argv[])
 
     Renderer rd(WINDOW_SIZE, WINDOW_SIZE);
 
+    //TODO: Make load texture function. SDL_GetBasePath() should be added as path for executable
     auto backGroundTexture = rd.loadTexture("assets/background/background_whatever.png");
-    //auto appleTexture = rd.loadTexture("assets/textures/apples.png");
     apples.populateTexture(rd);
+    snek.populateTexture(rd);
+
+    // Key poller.
     while(running)
     {
         while(SDL_PollEvent(&evt))
@@ -88,26 +89,25 @@ int main(int argc, char* argv[])
         // Draw scoreboard
         rd.render(0, 0, (cScore+score), font, {255, 255, 255, 255});
 
-        // Draw snek
-        rd.renderPlainRect(snek.getSnekHead(), {0, 255, 0, 255});
-        rd.renderPlainRectArray(snek.getSnekBody(), {50, 200, 50, 255}, true);
-        rd.renderPlainRect(snek.getSnekTail(), {255, 255, 0, 255});
+        // Draw snake
+        snek.renderSnake(rd);
+
         // Draw apples
+        //TODO: Apples rendering, move it to apple class
         std::for_each(apples.m_apples.begin(), apples.m_apples.end(), [&](auto& apple)
         {
             rd.renderFromSprite(apple.color.texture, apple.color.spriteX, apple.color.spriteY, 
                                 apple.color.spriteW, apple.color.spriteH,
                                 apple.rect.x, apple.rect.y, apple.rect.w, apple.rect.w);
         });
-
-        // Apple textute move to somewhere
-        //rd.renderFromSprite(appleTexture, 17, 125, 73, 94, 100, 100, 10, 10);
        
         rd.display();
         SDL_Delay(35);
     }
 
     // Cleanup and close
+    TTF_Quit();
+    IMG_Quit();
     SDL_Quit();
 
     return 0;
