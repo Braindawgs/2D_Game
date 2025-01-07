@@ -1,31 +1,53 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <stdexcept>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <deque>
 
-#define WINDOW_SIZE (800u)
+#include "Snek.hpp"
+#include "Apples.hpp"
+#include "Renderer.hpp"
+
+// https://www.youtube.com/watch?v=3kw1-dOikMA&list=PLYmIsLVSssdIOn5J71CVBblPlXici1_2A&index=7
+
+#define WINDOW_SIZE (1000u)
+#define APPLE_COUNT (100u)
 
 int main(int argc, char* argv[]) 
 {
-    SDL_Rect rect{WINDOW_SIZE/2, WINDOW_SIZE/2, 50, 50};
     SDL_Event evt;
+    Snek::Player snek(WINDOW_SIZE, WINDOW_SIZE);
+    Apples apples(APPLE_COUNT);
+
     bool running = true;
-
-
-
+    
     // Initialize SDL
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) 
     {
         throw std::runtime_error("SDL Init failed\n");
     }
-
-    // Create an SDL window
-    SDL_Window* window = nullptr;
-    SDL_Renderer* render = nullptr; 
-    if (SDL_CreateWindowAndRenderer(WINDOW_SIZE, WINDOW_SIZE, 0, &window, &render))
+    // Initialize TTF
+    if (TTF_Init() != 0) 
     {
-        throw std::runtime_error("Creating window/rendered failed\n");
+        throw std::runtime_error("TTF Init failed\n");
+    }
+    if (IMG_Init(IMG_INIT_PNG) == 0)
+    {
+        throw std::runtime_error("IMG Init failed\n");
     }
 
+    Renderer rd(WINDOW_SIZE, WINDOW_SIZE);
+
+    //TODO: Make load texture function. SDL_GetBasePath() should be added as path for executable
+    auto backGroundTexture = rd.loadTexture("assets/background/background_whatever.png");
+    apples.populateTexture(rd);
+    snek.populateTexture(rd);
+
+    // Key poller.
     while(running)
     {
         while(SDL_PollEvent(&evt))
@@ -35,31 +57,59 @@ int main(int argc, char* argv[])
                 running = false;
             }
 
-            else if (SDL_KEYDOWN == evt.type)
-            {
-                std::cout << "Mjau" << std::endl;
-            }
-
-            else if (SDL_MOUSEMOTION == evt.type)
-            {
-                SDL_GetMouseState(&rect.x, &rect.y);
-            }
+            snek.movementInput(evt);
         }
 
-        SDL_SetRenderDrawColor(render, 0, 0, 0, 255);
-        SDL_RenderClear(render);
+        // TODO: Single movement function.
+        snek.updatePosition();
+        snek.updateMovement();
 
-        SDL_SetRenderDrawColor(render, 255, 255, 255, 255);
-        SDL_RenderFillRect(render, &rect);
+        if (apples.checkAppleCollision(snek.getSnekHead()))
+        {
+            snek.snekChangeSize(5);
+        }
 
-        SDL_RenderPresent(render);
+        snek.checkCollisionSelf();
 
-        SDL_Delay(5);
+    
+        //TODO: Scoring module, just testing, remove 
+        TTF_Font* font = TTF_OpenFont("assets/fonts/FreeSans.ttf", 24);
+        if (font == nullptr) 
+        {
+            std::cerr << "Failed to load default font: " << TTF_GetError() << std::endl;
+        }
+        std::string const cScore = "Score:";
+        std::string score = std::to_string(apples.appleCount());
+
+
+        // Clear screen
+        rd.clear();
+
+        rd.renderFitWindow(*backGroundTexture);
+        // Draw scoreboard
+        rd.render(0, 0, (cScore+score), font, {255, 255, 255, 255});
+
+        // Draw snake
+        snek.renderSnake(rd);
+
+        // Draw apples
+        //TODO: Apples rendering, move it to apple class
+        std::for_each(apples.m_apples.begin(), apples.m_apples.end(), [&](auto& apple)
+        {
+            rd.renderFromSprite(apple.color.texture, apple.color.spriteX, apple.color.spriteY, 
+                                apple.color.spriteW, apple.color.spriteH,
+                                apple.rect.x, apple.rect.y, apple.rect.w, apple.rect.w);
+        });
+       
+        rd.display();
+        SDL_Delay(35);
     }
 
     // Cleanup and close
-    SDL_DestroyWindow(window);
+    TTF_Quit();
+    IMG_Quit();
     SDL_Quit();
 
     return 0;
 }
+
