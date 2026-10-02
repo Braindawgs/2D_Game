@@ -60,11 +60,21 @@ void Renderer::clear()
 
 SDL_Texture* Renderer::loadTexture(std::string const& path)
 {
+    auto cached = m_textures.find(path);
+    if (cached != m_textures.end())
+    {
+        return cached->second;
+    }
+
     auto texture = IMG_LoadTexture(m_rndr, path.c_str());
 
     if (nullptr == texture)
     {
         std::cerr << "Failed to load texture: "<< path << std::endl;
+    }
+    else
+    {
+        m_textures[path] = texture;
     }
 
     return texture;

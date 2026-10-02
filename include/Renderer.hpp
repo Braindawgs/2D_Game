@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <string>
+#include <unordered_map>
 
 class Renderer
 {       
@@ -40,6 +41,13 @@ class Renderer
          */
         void clear();
 
+        /**
+         * @brief Loads texture, or returns already loaded one for same path.
+         * Renderer owns the texture and destroys it, callers must not.
+         *
+         * @param path Texture path.
+         * @return SDL_Texture* Texture or nullptr on failure.
+         */
         SDL_Texture* loadTexture(std::string const& path);
 
         void render(int posX, int posY, SDL_Texture& texture);
@@ -99,4 +107,5 @@ class Renderer
     private:
         SDL_Window* m_window = nullptr;
         SDL_Renderer* m_rndr = nullptr;
+        std::unordered_map<std::string, SDL_Texture*> m_textures;
 };
