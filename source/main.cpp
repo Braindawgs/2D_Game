@@ -20,6 +20,15 @@
 #define APPLE_SPAWN_INTERVAL_MS (10000u)
 #define APPLE_SPAWN_COUNT (5u)
 #define APPLE_SPAWN_MAX (150u)
+#define APPLE_GROWTH (5u)
+
+#define BOMB_SPAWN_INTERVAL_MS (8000u)
+#define BOMB_SPAWN_COUNT (1u)
+#define BOMB_SPAWN_MAX (3u)
+#define BOMB_FUSE_MS (5000u)
+#define BOMB_BLAST_RADIUS (3)
+#define BOMB_EAT_PENALTY (5u)
+#define BOMB_BLAST_PENALTY (5u)
 
 /**
  * @brief Checks for first press of key, ignores repeats from holding key down.
@@ -73,11 +82,20 @@ int main(int argc, char* argv[])
         TTF_Font* titleFont = openFont(72);
         SDL_Color const white = {255, 255, 255, 255};
 
-        SpawnRule const appleSpawnRule = {APPLE_SPAWN_INTERVAL_MS, APPLE_SPAWN_COUNT, APPLE_SPAWN_MAX};
+        GameConfig config = {};
+        config.windowW = WINDOW_SIZE;
+        config.windowH = WINDOW_SIZE;
+        config.appleCount = APPLE_COUNT;
+        config.appleGrowth = APPLE_GROWTH;
+        config.appleSpawnRule = {APPLE_SPAWN_INTERVAL_MS, APPLE_SPAWN_COUNT, APPLE_SPAWN_MAX};
+        config.bombSpawnRule = {BOMB_SPAWN_INTERVAL_MS, BOMB_SPAWN_COUNT, BOMB_SPAWN_MAX};
+        config.bombType = {BOMB_FUSE_MS, BOMB_BLAST_RADIUS};
+        config.bombEatPenalty = BOMB_EAT_PENALTY;
+        config.bombBlastPenalty = BOMB_BLAST_PENALTY;
 
         // Optional so restart can construct new round in place, Player can't be reassigned.
         std::optional<GameRound> round;
-        round.emplace(WINDOW_SIZE, WINDOW_SIZE, APPLE_COUNT, appleSpawnRule, rd);
+        round.emplace(config, rd);
 
         Uint32 lastTickMs = SDL_GetTicks();
 
@@ -98,7 +116,7 @@ int main(int argc, char* argv[])
                 }
                 else if (GameState::PLAYING == round->state)
                 {
-                    //TODO: No in game event ends the round yet, Esc ends it for now.
+                    // Esc gives up current round.
                     if (isKeyPressed(evt, SDLK_ESCAPE))
                     {
                         round->state = GameState::GAME_OVER;
@@ -120,7 +138,7 @@ int main(int argc, char* argv[])
 
             if (restart)
             {
-                round.emplace(WINDOW_SIZE, WINDOW_SIZE, APPLE_COUNT, appleSpawnRule, rd);
+                round.emplace(config, rd);
             }
 
             auto& snek = round->snek;
@@ -128,22 +146,7 @@ int main(int argc, char* argv[])
 
             if (GameState::PLAYING == round->state)
             {
-                snek.updateMovement();
-
-                if (apples.checkAppleCollision(snek.getSnekHead()))
-                {
-                    snek.snekChangeSize(5);
-                    round->score++;
-                }
-
-                snek.checkCollisionSelf();
-
-                // Spawner only advances while playing, game over doesn't count towards next spawn.
-                size_t const applesToSpawn = round->appleSpawner.update(deltaMs, apples.appleCount());
-                if (applesToSpawn > 0)
-                {
-                    apples.spawn(applesToSpawn, snek.getOccupiedCells());
-                }
+                round->update(deltaMs);
             }
 
             std::string const score = "Score: " + std::to_string(round->score);
@@ -168,7 +171,9 @@ int main(int argc, char* argv[])
                                     apple.rect.x, apple.rect.y, apple.rect.w, apple.rect.w);
             });
 
-            // Draw scoreboard, after apples so they don't cover it
+            round->bombs.render(rd);
+
+            // Draw scoreboard, after apples and bombs so they don't cover it
             rd.render(0, 0, score, font, white);
 
             if (GameState::GAME_OVER == round->state)

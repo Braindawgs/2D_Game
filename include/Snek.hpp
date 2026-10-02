@@ -122,8 +122,27 @@ namespace Snek
 
         void snekSetSize(unsigned int size);
         void snekChangeSize(int dsize);
+
+        /**
+         * @brief Removes segments from tail, snake shorter than count loses all body segments.
+         *
+         * @param count Number of segments to remove.
+         */
+        void loseSegments(size_t count);
         
-        void checkCollisionSelf();
+        /**
+         * @brief Check if head ran into body.
+         *
+         * @return true If head is on a body segment.
+         */
+        bool checkCollisionSelf() const;
+
+        /**
+         * @brief Get the Body Size object.
+         *
+         * @return size_t Number of body segments, head and tail not counted.
+         */
+        size_t getBodySize() const;
 
         //TODO: Deal with this
         void renderSnake(Renderer& rd);

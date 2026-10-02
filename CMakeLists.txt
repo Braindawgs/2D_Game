@@ -18,6 +18,10 @@ set(SOURCE_FILES
     source/Renderer.cpp
     source/Utils.cpp
     source/Spawner.cpp
+    source/Grid.cpp
+    source/Animation.cpp
+    source/Bombs.cpp
+    source/Game.cpp
 
 )
 

@@ -3,9 +3,9 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <algorithm>
-#include <random>
 #include "Renderer.hpp"
 #include "Utils.hpp"
+#include "Grid.hpp"
 
 
 class Apples
@@ -48,6 +48,22 @@ class Apples
         size_t spawn(size_t count, std::vector<SDL_Rect> const& blocked);
 
         /**
+         * @brief Removes all apples within radius of center cell.
+         * 
+         * @param center Center cell.
+         * @param radiusCells Radius in cells.
+         * @return size_t Number of removed apples.
+         */
+        size_t removeInRadius(SDL_Rect const& center, int radiusCells);
+
+        /**
+         * @brief Get cells covered by apples.
+         * 
+         * @return std::vector<SDL_Rect> Occupied cells.
+         */
+        std::vector<SDL_Rect> getOccupiedCells() const;
+
+        /**
          * @brief Loads apple textures. 
          * 
          * @param rd Renderer.
@@ -72,10 +88,7 @@ class Apples
         spriteTexture greenApple = {102, 124, 73, 94, appleTextureApple, nullptr};
         spriteTexture yellowApple = {186, 124, 73, 94, appleTextureApple, nullptr};
 
-        int m_gridW;
-        int m_gridH;
-        int m_cellSize;
-        std::mt19937 m_rng;
+        Grid m_grid;
 
         void deleteApple(std::vector<AppleData>::iterator entity);
 
@@ -88,12 +101,4 @@ class Apples
          */
         bool isCellTaken(SDL_Rect const& cell, std::vector<SDL_Rect> const& blocked) const;
 
-        /**
-         * @brief Finds random free cell on grid.
-         * 
-         * @param cell Found cell.
-         * @param blocked Additional blocked cells.
-         * @return true If free cell was found.
-         */
-        bool findFreeCell(SDL_Rect& cell, std::vector<SDL_Rect> const& blocked);
 };

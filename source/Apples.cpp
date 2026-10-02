@@ -3,10 +3,7 @@
 #include "Utils.hpp"
 
 Apples::Apples(size_t count, int windowW, int windowH, int cellSize, std::vector<SDL_Rect> const& blocked)
-    : m_gridW(windowW / cellSize),
-      m_gridH(windowH / cellSize),
-      m_cellSize(cellSize),
-      m_rng(std::random_device{}())
+    : m_grid(windowW, windowH, cellSize)
 {
     m_count = count;
     spawn(count, blocked);
@@ -18,7 +15,7 @@ size_t Apples::spawn(size_t count, std::vector<SDL_Rect> const& blocked)
     for (; placed < count; placed++)
     {
         SDL_Rect cell;
-        if (!findFreeCell(cell, blocked))
+        if (!m_grid.findFreeCell(cell, [&](SDL_Rect const& candidate) { return isCellTaken(candidate, blocked); }))
         {
             std::cerr << "No free cell for apple, placed " << placed << " of " << count << std::endl;
             break;
@@ -37,35 +34,25 @@ bool Apples::isCellTaken(SDL_Rect const& cell, std::vector<SDL_Rect> const& bloc
            std::any_of(m_apples.begin(), m_apples.end(), [&](auto const& apple) { return sameCell(apple.rect); });
 }
 
-bool Apples::findFreeCell(SDL_Rect& cell, std::vector<SDL_Rect> const& blocked)
+size_t Apples::removeInRadius(SDL_Rect const& center, int radiusCells)
 {
-    std::uniform_int_distribution<int> randX(0, m_gridW - 1);
-    std::uniform_int_distribution<int> randY(0, m_gridH - 1);
+    auto const inRadius = [&](AppleData const& apple) { return m_grid.isWithinRadius(apple.rect, center, radiusCells); };
+    auto const firstRemoved = std::remove_if(m_apples.begin(), m_apples.end(), inRadius);
+    size_t const removed = static_cast<size_t>(std::distance(firstRemoved, m_apples.end()));
+    m_apples.erase(firstRemoved, m_apples.end());
 
-    // Random tries are fast while grid is mostly empty, limit them so full grid can't loop forever.
-    int const cellCount = m_gridW * m_gridH;
-    for (int tries = 0; tries < cellCount; tries++)
+    return removed;
+}
+
+std::vector<SDL_Rect> Apples::getOccupiedCells() const
+{
+    std::vector<SDL_Rect> cells;
+    for (auto const& apple : m_apples)
     {
-        cell = {randX(m_rng) * m_cellSize, randY(m_rng) * m_cellSize, m_cellSize, m_cellSize};
-        if (!isCellTaken(cell, blocked))
-        {
-            return true;
-        }
+        cells.push_back(apple.rect);
     }
 
-    // Grid almost full, random tries can miss last free cells. Scan all cells from random start.
-    int const start = std::uniform_int_distribution<int>(0, cellCount - 1)(m_rng);
-    for (int offset = 0; offset < cellCount; offset++)
-    {
-        int const index = (start + offset) % cellCount;
-        cell = {(index % m_gridW) * m_cellSize, (index / m_gridW) * m_cellSize, m_cellSize, m_cellSize};
-        if (!isCellTaken(cell, blocked))
-        {
-            return true;
-        }
-    }
-
-    return false;
+    return cells;
 }
 
 void Apples::populateTexture(Renderer& rd)

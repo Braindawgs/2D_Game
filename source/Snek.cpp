@@ -44,16 +44,22 @@ size_t Player::getSize()
 }
 
 // Todo: update for tail;
-void Player::checkCollisionSelf()
+bool Player::checkCollisionSelf() const
 {
-    for (auto& snekBody : m_sparts.snekBody.snekBody)
+    for (auto const& snekBody : m_sparts.snekBody.snekBody)
     {
         if ((m_sparts.snekHead.snekHead.x == snekBody.snekSingleBodyPart.x) && (m_sparts.snekHead.snekHead.y == snekBody.snekSingleBodyPart.y))
         {
-            snekSetSize(0);
-            break;
+            return true;
         }
     }
+
+    return false;
+}
+
+size_t Player::getBodySize() const
+{
+    return m_sparts.snekBody.snekBody.size();
 }
 
 SDL_Rect& Player::getSnekHead()
@@ -151,6 +157,14 @@ void Player::snekSetSize(unsigned int size)
         {
             growBody();
         }
+    }
+}
+
+void Player::loseSegments(size_t count)
+{
+    for (size_t it = 0; (it < count) && !m_sparts.snekBody.snekBody.empty(); it++)
+    {
+        shrinkBody();
     }
 }
 
