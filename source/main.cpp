@@ -40,76 +40,80 @@ int main(int argc, char* argv[])
         throw std::runtime_error("IMG Init failed\n");
     }
 
-    Renderer rd(WINDOW_SIZE, WINDOW_SIZE);
-
-    //TODO: Make load texture function. SDL_GetBasePath() should be added as path for executable
-    auto backGroundTexture = rd.loadTexture("assets/background/background_whatever.png");
-    apples.populateTexture(rd);
-    snek.populateTexture(rd);
-
-    //TODO: Scoring module, just testing, remove
-    TTF_Font* font = TTF_OpenFont("assets/fonts/FreeSans.ttf", 24);
-    if (font == nullptr)
+    // Scoped so Renderer and its textures are destroyed before SDL_Quit.
     {
-        std::cerr << "Failed to load default font: " << TTF_GetError() << std::endl;
-    }
-    std::string const cScore = "Score:";
+        Renderer rd(WINDOW_SIZE, WINDOW_SIZE);
 
-    // Key poller.
-    while(running)
-    {
-        while(SDL_PollEvent(&evt))
+        //TODO: Make load texture function. SDL_GetBasePath() should be added as path for executable
+        auto backGroundTexture = rd.loadTexture("assets/background/background_whatever.png");
+        apples.populateTexture(rd);
+        snek.populateTexture(rd);
+
+        //TODO: Scoring module, just testing, remove
+        TTF_Font* font = TTF_OpenFont("assets/fonts/FreeSans.ttf", 24);
+        if (font == nullptr)
         {
-            if (SDL_QUIT == evt.type)
+            std::cerr << "Failed to load default font: " << TTF_GetError() << std::endl;
+        }
+        std::string const cScore = "Score:";
+
+        // Key poller.
+        while(running)
+        {
+            while(SDL_PollEvent(&evt))
             {
-                running = false;
+                if (SDL_QUIT == evt.type)
+                {
+                    running = false;
+                }
+
+                snek.movementInput(evt);
             }
 
-            snek.movementInput(evt);
-        }
+            // TODO: Single movement function.
+            snek.updatePosition();
+            snek.updateMovement();
 
-        // TODO: Single movement function.
-        snek.updatePosition();
-        snek.updateMovement();
+            if (apples.checkAppleCollision(snek.getSnekHead()))
+            {
+                snek.snekChangeSize(5);
+            }
 
-        if (apples.checkAppleCollision(snek.getSnekHead()))
-        {
-            snek.snekChangeSize(5);
-        }
+            snek.checkCollisionSelf();
 
-        snek.checkCollisionSelf();
-
-        std::string const score = std::to_string(apples.appleCount());
+            std::string const score = std::to_string(apples.appleCount());
 
 
-        // Clear screen
-        rd.clear();
+            // Clear screen
+            rd.clear();
 
-        rd.renderFitWindow(*backGroundTexture);
-        // Draw scoreboard
-        rd.render(0, 0, (cScore+score), font, {255, 255, 255, 255});
+            rd.renderFitWindow(*backGroundTexture);
+            // Draw scoreboard
+            rd.render(0, 0, (cScore+score), font, {255, 255, 255, 255});
 
-        // Draw snake
-        snek.renderSnake(rd);
+            // Draw snake
+            snek.renderSnake(rd);
 
-        // Draw apples
-        //TODO: Apples rendering, move it to apple class
-        std::for_each(apples.m_apples.begin(), apples.m_apples.end(), [&](auto& apple)
-        {
-            rd.renderFromSprite(apple.color.texture, apple.color.spriteX, apple.color.spriteY, 
-                                apple.color.spriteW, apple.color.spriteH,
-                                apple.rect.x, apple.rect.y, apple.rect.w, apple.rect.w);
-        });
+            // Draw apples
+            //TODO: Apples rendering, move it to apple class
+            std::for_each(apples.m_apples.begin(), apples.m_apples.end(), [&](auto& apple)
+            {
+                rd.renderFromSprite(apple.color.texture, apple.color.spriteX, apple.color.spriteY, 
+                                    apple.color.spriteW, apple.color.spriteH,
+                                    apple.rect.x, apple.rect.y, apple.rect.w, apple.rect.w);
+            });
        
-        rd.display();
-        SDL_Delay(35);
+            rd.display();
+            SDL_Delay(35);
+        }
+
+        // Cleanup and close
+        if (nullptr != font)
+        {
+            TTF_CloseFont(font);
+        }
     }
 
-    // Cleanup and close
-    if (nullptr != font)
-    {
-        TTF_CloseFont(font);
-    }
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
