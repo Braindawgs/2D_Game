@@ -16,8 +16,9 @@ Renderer::Renderer(int windowW, int windowH)
 
     m_rndr = SDL_CreateRenderer(m_window, -1, 0);
 
-    if (nullptr == m_window)
+    if (nullptr == m_rndr)
     {
+        SDL_DestroyWindow(m_window);
         throw std::runtime_error("Failed to init renderer, crit error\n");
     }
 }
