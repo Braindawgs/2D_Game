@@ -93,6 +93,10 @@ namespace Snek
          */
         void movementInput(SDL_Event& evt);
 
+        /**
+         * @brief Applies current direction and moves snake one step.
+         *
+         */
         void updateMovement();
         void setSpeed(int x, int y);
         void setAngle(double angl);
@@ -103,7 +107,6 @@ namespace Snek
         void snekSetSize(unsigned int size);
         void snekChangeSize(int dsize);
         
-        void updatePosition();
         void checkCollisionSelf();
 
         //TODO: Deal with this
@@ -121,7 +124,6 @@ namespace Snek
 
         void growBody();
         void shrinkBody();
-        void movementExec(snakeDirection const& dir);
 
         /**
          * @brief Get the Snek Parts textures.

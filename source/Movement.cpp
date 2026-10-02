@@ -31,3 +31,36 @@
             }
         }
     }
+
+MovementVector directionToMovement(snakeDirection dir)
+{
+    MovementVector movement = {0, 0, 0};
+
+    switch(dir)
+    {
+        case snakeDirection::DOWN: 
+        {
+            movement = {0, 1, 180};
+        }
+        break;
+        case snakeDirection::UP: 
+        {
+            movement = {0, -1, 0};
+        }
+        break;
+        case snakeDirection::RIGHT: 
+        {
+            movement = {1, 0, 90};
+        }
+        break;
+        case snakeDirection::LEFT: 
+        {
+            movement = {-1, 0, 270};
+        }
+        break;
+        default:
+        break;
+    }
+
+    return movement;
+}

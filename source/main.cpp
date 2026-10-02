@@ -70,8 +70,6 @@ int main(int argc, char* argv[])
                 snek.movementInput(evt);
             }
 
-            // TODO: Single movement function.
-            snek.updatePosition();
             snek.updateMovement();
 
             if (apples.checkAppleCollision(snek.getSnekHead()))

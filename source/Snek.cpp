@@ -82,11 +82,6 @@ void Player::movementInput(SDL_Event& evt)
     movementSelector(evt, m_dir);
 }
 
-void Player::updatePosition()
-{
-    movementExec(m_dir);
-}
-
 void Player::growBody()
 {
     if (m_sparts.snekBody.snekBody.empty())
@@ -182,6 +177,10 @@ double Player::getAngle()
 
 void Player::updateMovement()
 {
+    auto const movement = directionToMovement(m_dir);
+    setSpeed(movement.dx, movement.dy);
+    setAngle(movement.angle);
+
     if ((0 != m_speedX) || (0 != m_speedY))
     {
         if (!m_sparts.snekBody.snekBody.empty())
@@ -216,39 +215,6 @@ void Player::updateMovement()
     m_sparts.snekHead.angle = m_angle;
 
 }
-
-  void Player::movementExec(snakeDirection const& dir)
-    {
-        switch(dir)
-        {
-            case snakeDirection::DOWN: 
-            {
-                setSpeed(0, 1);
-                setAngle(180);
-            }
-            break;
-            case snakeDirection::UP: 
-            {
-                setSpeed(0, -1);
-                setAngle(0);
-            }
-            break;
-            case snakeDirection::RIGHT: 
-            {
-                setSpeed(1, 0);
-                setAngle(90);
-            }
-            break;
-            case snakeDirection::LEFT: 
-            {
-                setSpeed(-1, 0);
-                setAngle(270);
-            }
-            break;
-            default:
-            break;
-        }
-    }
 
 void Player::populateTexture(Renderer& rd)
 {
