@@ -47,6 +47,14 @@ int main(int argc, char* argv[])
     apples.populateTexture(rd);
     snek.populateTexture(rd);
 
+    //TODO: Scoring module, just testing, remove
+    TTF_Font* font = TTF_OpenFont("assets/fonts/FreeSans.ttf", 24);
+    if (font == nullptr)
+    {
+        std::cerr << "Failed to load default font: " << TTF_GetError() << std::endl;
+    }
+    std::string const cScore = "Score:";
+
     // Key poller.
     while(running)
     {
@@ -71,15 +79,7 @@ int main(int argc, char* argv[])
 
         snek.checkCollisionSelf();
 
-    
-        //TODO: Scoring module, just testing, remove 
-        TTF_Font* font = TTF_OpenFont("assets/fonts/FreeSans.ttf", 24);
-        if (font == nullptr) 
-        {
-            std::cerr << "Failed to load default font: " << TTF_GetError() << std::endl;
-        }
-        std::string const cScore = "Score:";
-        std::string score = std::to_string(apples.appleCount());
+        std::string const score = std::to_string(apples.appleCount());
 
 
         // Clear screen
@@ -106,6 +106,10 @@ int main(int argc, char* argv[])
     }
 
     // Cleanup and close
+    if (nullptr != font)
+    {
+        TTF_CloseFont(font);
+    }
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
