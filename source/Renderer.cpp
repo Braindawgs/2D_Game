@@ -91,14 +91,29 @@ void Renderer::render(int posX, int posY, int sizeW, int sizeH, SDL_Texture& tex
  
 void Renderer::render(int posX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textColor)
 {
-    auto textSurface = TTF_RenderText_Blended(font, txt.c_str(), textColor);
-    auto textTexture = SDL_CreateTextureFromSurface(m_rndr, textSurface);
-    SDL_FreeSurface(textSurface); // Free the surface since the texture is created
+    if (nullptr == font)
+    {
+        return;
+    }
 
+    auto textSurface = TTF_RenderText_Blended(font, txt.c_str(), textColor);
+    if (nullptr == textSurface)
+    {
+        return;
+    }
+
+    auto textTexture = SDL_CreateTextureFromSurface(m_rndr, textSurface);
     SDL_Rect source = {0, 0, textSurface->w, textSurface->h};
     SDL_Rect dest = {posX, posY, source.w, source.h};
+    SDL_FreeSurface(textSurface); // Free the surface since the texture is created
+
+    if (nullptr == textTexture)
+    {
+        return;
+    }
 
     SDL_RenderCopy(m_rndr, textTexture, &source, &dest);
+    SDL_DestroyTexture(textTexture);
 }
 
 // TODO: all of the parameters fit in rect use it bruh.
