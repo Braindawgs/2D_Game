@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 {
     SDL_Event evt;
     Snek::Player snek(WINDOW_SIZE, WINDOW_SIZE);
-    Apples apples(APPLE_COUNT);
+    Apples apples(APPLE_COUNT, WINDOW_SIZE, WINDOW_SIZE, snek.getSegmentSize(), snek.getOccupiedCells());
 
     bool running = true;
     

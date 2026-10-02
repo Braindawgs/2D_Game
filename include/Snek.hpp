@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <algorithm>
 #include <deque>
+#include <vector>
 
 #include "Renderer.hpp"
 #include "Movement.hpp"
@@ -71,6 +72,20 @@ namespace Snek
          * @return SDL_Rect& Reference to snake head.
          */
         SDL_Rect& getSnekHead();
+
+        /**
+         * @brief Get cells covered by snake (head, body and tail).
+         *
+         * @return std::vector<SDL_Rect> Occupied cells.
+         */
+        std::vector<SDL_Rect> getOccupiedCells();
+
+        /**
+         * @brief Get the Segment Size object.
+         *
+         * @return int Size of one snake segment, also size of one grid cell.
+         */
+        int getSegmentSize() const;
 
         /**
          * @brief Get the Size object.

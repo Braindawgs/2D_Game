@@ -72,6 +72,24 @@ SDL_Rect& Player::getSnekTail()
     return m_sparts.snekTail.snekTail;
 }
 
+std::vector<SDL_Rect> Player::getOccupiedCells()
+{
+    std::vector<SDL_Rect> cells;
+    cells.push_back(m_sparts.snekHead.snekHead);
+    for (auto& bodyPart : m_sparts.snekBody.snekBody)
+    {
+        cells.push_back(bodyPart.snekSingleBodyPart);
+    }
+    cells.push_back(m_sparts.snekTail.snekTail);
+
+    return cells;
+}
+
+int Player::getSegmentSize() const
+{
+    return segmentSize;
+}
+
 std::deque<SnekSingleBody>& Player::getSnekBody()
 {
     return m_sparts.snekBody.snekBody;
