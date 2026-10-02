@@ -22,6 +22,9 @@ Renderer::Renderer(int windowW, int windowH)
         SDL_DestroyWindow(m_window);
         throw std::runtime_error("Failed to init renderer, crit error\n");
     }
+
+    // Lets plain rects use alpha, e.g. dim overlay on game over.
+    SDL_SetRenderDrawBlendMode(m_rndr, SDL_BLENDMODE_BLEND);
 }
 
 Renderer::~Renderer()
@@ -132,6 +135,17 @@ void Renderer::render(int posX, int posY, std::string const& txt, TTF_Font* font
 
     SDL_RenderCopy(m_rndr, textTexture, &source, &dest);
     SDL_DestroyTexture(textTexture);
+}
+
+void Renderer::renderTextCentered(int centerX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textColor)
+{
+    int textW = 0;
+    if ((nullptr == font) || (0 != TTF_SizeText(font, txt.c_str(), &textW, nullptr)))
+    {
+        return;
+    }
+
+    render(centerX - textW / 2, posY, txt, font, textColor);
 }
 
 // TODO: all of the parameters fit in rect use it bruh.
