@@ -59,6 +59,17 @@ class Renderer
         void render(SDL_Texture& texture);
         void render(int posX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textColor);
 
+        /**
+         * @brief Renders text horizontally centered around centerX.
+         *
+         * @param centerX Horizontal center of text.
+         * @param posY Top of text.
+         * @param txt Text.
+         * @param font Font.
+         * @param textColor Text color.
+         */
+        void renderTextCentered(int centerX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textColor);
+
         void renderFromSprite(SDL_Texture* spriteSheet, int srcX, int srcY, int srcW, int srcH, 
                              int destX, int destY, int destW, int destH);
 
