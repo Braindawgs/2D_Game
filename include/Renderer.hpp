@@ -49,7 +49,7 @@ class Renderer
          * @brief Loads texture, or returns already loaded one for same path.
          * Renderer owns the texture and destroys it, callers must not.
          *
-         * @param path Texture path.
+         * @param path Texture path, relative to executable location.
          * @return SDL_Texture* Texture or nullptr on failure.
          */
         SDL_Texture* loadTexture(std::string const& path);

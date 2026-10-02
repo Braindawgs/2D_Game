@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <iostream>
 #include "Renderer.hpp"
+#include "Utils.hpp"
 
 Renderer::Renderer(int windowW, int windowH)
 {
@@ -71,11 +72,12 @@ SDL_Texture* Renderer::loadTexture(std::string const& path)
         return cached->second;
     }
 
-    auto texture = IMG_LoadTexture(m_rndr, path.c_str());
+    auto const fullPath = assetPath(path);
+    auto texture = IMG_LoadTexture(m_rndr, fullPath.c_str());
 
     if (nullptr == texture)
     {
-        std::cerr << "Failed to load texture: "<< path << std::endl;
+        std::cerr << "Failed to load texture: "<< fullPath << std::endl;
     }
     else
     {

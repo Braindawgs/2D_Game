@@ -11,6 +11,7 @@
 #include "Snek.hpp"
 #include "Apples.hpp"
 #include "Renderer.hpp"
+#include "Utils.hpp"
 
 // https://www.youtube.com/watch?v=3kw1-dOikMA&list=PLYmIsLVSssdIOn5J71CVBblPlXici1_2A&index=7
 
@@ -44,13 +45,12 @@ int main(int argc, char* argv[])
     {
         Renderer rd(WINDOW_SIZE, WINDOW_SIZE);
 
-        //TODO: Make load texture function. SDL_GetBasePath() should be added as path for executable
         auto backGroundTexture = rd.loadTexture("assets/background/background_whatever.png");
         apples.populateTexture(rd);
         snek.populateTexture(rd);
 
         //TODO: Scoring module, just testing, remove
-        TTF_Font* font = TTF_OpenFont("assets/fonts/FreeSans.ttf", 24);
+        TTF_Font* font = TTF_OpenFont(assetPath("assets/fonts/FreeSans.ttf").c_str(), 24);
         if (font == nullptr)
         {
             std::cerr << "Failed to load default font: " << TTF_GetError() << std::endl;
@@ -87,7 +87,10 @@ int main(int argc, char* argv[])
             // Clear screen
             rd.clear();
 
-            rd.renderFitWindow(*backGroundTexture);
+            if (nullptr != backGroundTexture)
+            {
+                rd.renderFitWindow(*backGroundTexture);
+            }
             // Draw scoreboard
             rd.render(0, 0, (cScore+score), font, {255, 255, 255, 255});
 
