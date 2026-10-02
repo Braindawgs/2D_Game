@@ -64,3 +64,13 @@ MovementVector directionToMovement(snakeDirection dir)
 
     return movement;
 }
+
+bool isOppositeDirection(snakeDirection first, snakeDirection second)
+{
+    auto const a = directionToMovement(first);
+    auto const b = directionToMovement(second);
+
+    // Opposite when steps cancel out, NONE has no step so it is never opposite.
+    bool const isMoving = (0 != a.dx) || (0 != a.dy);
+    return isMoving && (a.dx == -b.dx) && (a.dy == -b.dy);
+}

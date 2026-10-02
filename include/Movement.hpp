@@ -34,3 +34,12 @@ void movementSelector(SDL_Event& evt, snakeDirection& dir);
  */
 MovementVector directionToMovement(snakeDirection dir);
 
+/**
+ * @brief Checks if directions point opposite ways, e.g. UP and DOWN.
+ *
+ * @param first First direction.
+ * @param second Second direction.
+ * @return true If directions are opposite, never true for NONE.
+ */
+bool isOppositeDirection(snakeDirection first, snakeDirection second);
+

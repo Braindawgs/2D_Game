@@ -21,7 +21,8 @@ Player::Player(int windowX, int windowY)
 
 
     m_sparts.snekTail.texture = {199, 128, 51, 58, snakeTexture, nullptr};
-    m_sparts.snekHead.dir = snakeDirection::NONE;
+    // Tail starts below head, so snake faces up and can't start by moving down.
+    m_sparts.snekHead.dir = snakeDirection::UP;
 }
 
 void Player::changeSize(int size)
@@ -90,7 +91,15 @@ std::deque<SnekSingleBody>& Player::getSnekBody()
 
 void Player::movementInput(SDL_Event& evt)
 {
-    movementSelector(evt, m_dir);
+    snakeDirection newDir = m_dir;
+    movementSelector(evt, newDir);
+
+    // Compare with direction snake last moved, not last key pressed. Otherwise two quick
+    // presses before next step (e.g. RIGHT then DOWN while moving UP) still reverse it.
+    if (!isOppositeDirection(newDir, m_sparts.snekHead.dir))
+    {
+        m_dir = newDir;
+    }
 }
 
 void Player::growBody()
@@ -218,7 +227,12 @@ void Player::updateMovement()
 
     m_sparts.snekHead.snekHead.x += m_speedX * 1;
     m_sparts.snekHead.snekHead.y += m_speedY * 1;
-    m_sparts.snekHead.dir = m_dir;
+
+    // Keep facing direction while standing still.
+    if (snakeDirection::NONE != m_dir)
+    {
+        m_sparts.snekHead.dir = m_dir;
+    }
 
 }
 
