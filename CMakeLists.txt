@@ -34,6 +34,13 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
 
+# Copy assets next to the executable, game loads them relative to its own location.
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/assets $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+)
+
 # Organize source/header files in IDE
 source_group("Source Files" FILES ${SOURCE_FILES})
 source_group("Header Files" FILES ${HEADER_FILES})

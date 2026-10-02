@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <iostream>
 #include "Renderer.hpp"
+#include "Utils.hpp"
 
 Renderer::Renderer(int windowW, int windowH)
 {
@@ -16,14 +17,20 @@ Renderer::Renderer(int windowW, int windowH)
 
     m_rndr = SDL_CreateRenderer(m_window, -1, 0);
 
-    if (nullptr == m_window)
+    if (nullptr == m_rndr)
     {
+        SDL_DestroyWindow(m_window);
         throw std::runtime_error("Failed to init renderer, crit error\n");
     }
 }
 
 Renderer::~Renderer()
 {
+    for (auto& [path, texture] : m_textures)
+    {
+        SDL_DestroyTexture(texture);
+    }
+    SDL_DestroyRenderer(m_rndr);
     SDL_DestroyWindow(m_window);
 }
 
@@ -59,11 +66,22 @@ void Renderer::clear()
 
 SDL_Texture* Renderer::loadTexture(std::string const& path)
 {
-    auto texture = IMG_LoadTexture(m_rndr, path.c_str());
+    auto cached = m_textures.find(path);
+    if (cached != m_textures.end())
+    {
+        return cached->second;
+    }
+
+    auto const fullPath = assetPath(path);
+    auto texture = IMG_LoadTexture(m_rndr, fullPath.c_str());
 
     if (nullptr == texture)
     {
-        std::cerr << "Failed to load texture: "<< path << std::endl;
+        std::cerr << "Failed to load texture: "<< fullPath << std::endl;
+    }
+    else
+    {
+        m_textures[path] = texture;
     }
 
     return texture;
@@ -91,14 +109,29 @@ void Renderer::render(int posX, int posY, int sizeW, int sizeH, SDL_Texture& tex
  
 void Renderer::render(int posX, int posY, std::string const& txt, TTF_Font* font, SDL_Color const& textColor)
 {
-    auto textSurface = TTF_RenderText_Blended(font, txt.c_str(), textColor);
-    auto textTexture = SDL_CreateTextureFromSurface(m_rndr, textSurface);
-    SDL_FreeSurface(textSurface); // Free the surface since the texture is created
+    if (nullptr == font)
+    {
+        return;
+    }
 
+    auto textSurface = TTF_RenderText_Blended(font, txt.c_str(), textColor);
+    if (nullptr == textSurface)
+    {
+        return;
+    }
+
+    auto textTexture = SDL_CreateTextureFromSurface(m_rndr, textSurface);
     SDL_Rect source = {0, 0, textSurface->w, textSurface->h};
     SDL_Rect dest = {posX, posY, source.w, source.h};
+    SDL_FreeSurface(textSurface); // Free the surface since the texture is created
+
+    if (nullptr == textTexture)
+    {
+        return;
+    }
 
     SDL_RenderCopy(m_rndr, textTexture, &source, &dest);
+    SDL_DestroyTexture(textTexture);
 }
 
 // TODO: all of the parameters fit in rect use it bruh.

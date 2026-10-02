@@ -9,6 +9,15 @@
 
 namespace Snek
 {
+    enum snekCurveTexture
+    {
+        NONE = 0,
+        DOWN_LEFT = 1,
+        UP_LEFT = 2,
+        UP_RIGHT = 3,
+        DOWN_RIGHT = 4
+    };
+
     struct SnekSingleBody
     {
         SDL_Rect snekSingleBodyPart;
@@ -25,7 +34,7 @@ namespace Snek
     struct SenkBody
     {
         std::deque<SnekSingleBody> snekBody;
-        spriteTexture texture;
+        spriteTexture texture[5];
     };
 
     struct SnekTail
@@ -89,6 +98,8 @@ namespace Snek
         void setAngle(double angl);
         double getAngle();
 
+        snekCurveTexture getSnekCurve(int anglePrev);
+
         void snekSetSize(unsigned int size);
         void snekChangeSize(int dsize);
         
@@ -118,7 +129,7 @@ namespace Snek
          * @return spriteTexture 
          */
         spriteTexture getSnekHeadTexture() const;
-        spriteTexture getSnekBodyTexture() const;
+        spriteTexture* getSnekBodyTexture();
         spriteTexture getSnekTailTexture() const;
         
         /**
@@ -142,6 +153,6 @@ namespace Snek
         double m_angle = 0;
 
         int m_size = 1;
-        snakeDirection m_dir = NONE;
+        snakeDirection m_dir = snakeDirection::NONE;
     };
 }

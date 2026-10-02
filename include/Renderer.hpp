@@ -6,6 +6,7 @@
 #include <vector>
 #include <algorithm>
 #include <string>
+#include <unordered_map>
 
 class Renderer
 {       
@@ -25,6 +26,10 @@ class Renderer
          */
         ~Renderer();
 
+        // Owns SDL window, renderer and textures, copying would double free them.
+        Renderer(Renderer const&) = delete;
+        Renderer& operator=(Renderer const&) = delete;
+
 #if 0
         /**
          * @brief Creates a window. 
@@ -40,6 +45,13 @@ class Renderer
          */
         void clear();
 
+        /**
+         * @brief Loads texture, or returns already loaded one for same path.
+         * Renderer owns the texture and destroys it, callers must not.
+         *
+         * @param path Texture path, relative to executable location.
+         * @return SDL_Texture* Texture or nullptr on failure.
+         */
         SDL_Texture* loadTexture(std::string const& path);
 
         void render(int posX, int posY, SDL_Texture& texture);
@@ -99,4 +111,5 @@ class Renderer
     private:
         SDL_Window* m_window = nullptr;
         SDL_Renderer* m_rndr = nullptr;
+        std::unordered_map<std::string, SDL_Texture*> m_textures;
 };

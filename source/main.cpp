@@ -11,6 +11,7 @@
 #include "Snek.hpp"
 #include "Apples.hpp"
 #include "Renderer.hpp"
+#include "Utils.hpp"
 
 // https://www.youtube.com/watch?v=3kw1-dOikMA&list=PLYmIsLVSssdIOn5J71CVBblPlXici1_2A&index=7
 
@@ -40,72 +41,82 @@ int main(int argc, char* argv[])
         throw std::runtime_error("IMG Init failed\n");
     }
 
-    Renderer rd(WINDOW_SIZE, WINDOW_SIZE);
-
-    //TODO: Make load texture function. SDL_GetBasePath() should be added as path for executable
-    auto backGroundTexture = rd.loadTexture("assets/background/background_whatever.png");
-    apples.populateTexture(rd);
-    snek.populateTexture(rd);
-
-    // Key poller.
-    while(running)
+    // Scoped so Renderer and its textures are destroyed before SDL_Quit.
     {
-        while(SDL_PollEvent(&evt))
-        {
-            if (SDL_QUIT == evt.type)
-            {
-                running = false;
-            }
+        Renderer rd(WINDOW_SIZE, WINDOW_SIZE);
 
-            snek.movementInput(evt);
-        }
+        auto backGroundTexture = rd.loadTexture("assets/background/background_whatever.png");
+        apples.populateTexture(rd);
+        snek.populateTexture(rd);
 
-        // TODO: Single movement function.
-        snek.updatePosition();
-        snek.updateMovement();
-
-        if (apples.checkAppleCollision(snek.getSnekHead()))
-        {
-            snek.snekChangeSize(5);
-        }
-
-        snek.checkCollisionSelf();
-
-    
-        //TODO: Scoring module, just testing, remove 
-        TTF_Font* font = TTF_OpenFont("assets/fonts/FreeSans.ttf", 24);
-        if (font == nullptr) 
+        //TODO: Scoring module, just testing, remove
+        TTF_Font* font = TTF_OpenFont(assetPath("assets/fonts/FreeSans.ttf").c_str(), 24);
+        if (font == nullptr)
         {
             std::cerr << "Failed to load default font: " << TTF_GetError() << std::endl;
         }
         std::string const cScore = "Score:";
-        std::string score = std::to_string(apples.appleCount());
 
-
-        // Clear screen
-        rd.clear();
-
-        rd.renderFitWindow(*backGroundTexture);
-        // Draw scoreboard
-        rd.render(0, 0, (cScore+score), font, {255, 255, 255, 255});
-
-        // Draw snake
-        snek.renderSnake(rd);
-
-        // Draw apples
-        //TODO: Apples rendering, move it to apple class
-        std::for_each(apples.m_apples.begin(), apples.m_apples.end(), [&](auto& apple)
+        // Key poller.
+        while(running)
         {
-            rd.renderFromSprite(apple.color.texture, apple.color.spriteX, apple.color.spriteY, 
-                                apple.color.spriteW, apple.color.spriteH,
-                                apple.rect.x, apple.rect.y, apple.rect.w, apple.rect.w);
-        });
+            while(SDL_PollEvent(&evt))
+            {
+                if (SDL_QUIT == evt.type)
+                {
+                    running = false;
+                }
+
+                snek.movementInput(evt);
+            }
+
+            // TODO: Single movement function.
+            snek.updatePosition();
+            snek.updateMovement();
+
+            if (apples.checkAppleCollision(snek.getSnekHead()))
+            {
+                snek.snekChangeSize(5);
+            }
+
+            snek.checkCollisionSelf();
+
+            std::string const score = std::to_string(apples.appleCount());
+
+
+            // Clear screen
+            rd.clear();
+
+            if (nullptr != backGroundTexture)
+            {
+                rd.renderFitWindow(*backGroundTexture);
+            }
+            // Draw scoreboard
+            rd.render(0, 0, (cScore+score), font, {255, 255, 255, 255});
+
+            // Draw snake
+            snek.renderSnake(rd);
+
+            // Draw apples
+            //TODO: Apples rendering, move it to apple class
+            std::for_each(apples.m_apples.begin(), apples.m_apples.end(), [&](auto& apple)
+            {
+                rd.renderFromSprite(apple.color.texture, apple.color.spriteX, apple.color.spriteY, 
+                                    apple.color.spriteW, apple.color.spriteH,
+                                    apple.rect.x, apple.rect.y, apple.rect.w, apple.rect.w);
+            });
        
-        rd.display();
-        SDL_Delay(35);
+            rd.display();
+            SDL_Delay(35);
+        }
+
+        // Cleanup and close
+        if (nullptr != font)
+        {
+            TTF_CloseFont(font);
+        }
     }
 
-    // Cleanup and close
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
