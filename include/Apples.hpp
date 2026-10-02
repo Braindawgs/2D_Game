@@ -39,6 +39,15 @@ class Apples
         bool checkAppleCollision(SDL_Rect const& entity);
 
         /**
+         * @brief Places new apples on free grid cells.
+         *
+         * @param count Number of apples to add.
+         * @param blocked Cells apples must not be placed on, e.g. snake.
+         * @return size_t Number of apples placed, less than count if grid is full.
+         */
+        size_t spawn(size_t count, std::vector<SDL_Rect> const& blocked);
+
+        /**
          * @brief Loads apple textures. 
          * 
          * @param rd Renderer.

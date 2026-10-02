@@ -9,16 +9,24 @@ Apples::Apples(size_t count, int windowW, int windowH, int cellSize, std::vector
       m_rng(std::random_device{}())
 {
     m_count = count;
-    for (size_t it = 0; it < count; it++)
+    spawn(count, blocked);
+}
+
+size_t Apples::spawn(size_t count, std::vector<SDL_Rect> const& blocked)
+{
+    size_t placed = 0;
+    for (; placed < count; placed++)
     {
         SDL_Rect cell;
         if (!findFreeCell(cell, blocked))
         {
-            std::cerr << "No free cell for apple, placed " << m_apples.size() << " of " << count << std::endl;
+            std::cerr << "No free cell for apple, placed " << placed << " of " << count << std::endl;
             break;
         }
         m_apples.push_back(AppleData{cell, redApple, 0});
     }
+
+    return placed;
 }
 
 bool Apples::isCellTaken(SDL_Rect const& cell, std::vector<SDL_Rect> const& blocked) const
@@ -62,6 +70,12 @@ bool Apples::findFreeCell(SDL_Rect& cell, std::vector<SDL_Rect> const& blocked)
 
 void Apples::populateTexture(Renderer& rd)
 {
+    // Templates get texture too, apples spawned later are copied from them.
+    for (auto* appleTemplate : {&redApple, &greenApple, &yellowApple})
+    {
+        appleTemplate->texture = rd.loadTexture(appleTemplate->sprite);
+    }
+
     std::for_each(m_apples.begin(), m_apples.end(), [&](auto& apple)
     {
         apple.color.texture = rd.loadTexture(apple.color.sprite);

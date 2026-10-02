@@ -17,6 +17,7 @@ set(SOURCE_FILES
     source/Apples.cpp
     source/Renderer.cpp
     source/Utils.cpp
+    source/Spawner.cpp
 
 )
 

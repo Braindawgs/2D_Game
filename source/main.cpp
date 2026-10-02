@@ -17,6 +17,9 @@
 
 #define WINDOW_SIZE (1000u)
 #define APPLE_COUNT (100u)
+#define APPLE_SPAWN_INTERVAL_MS (10000u)
+#define APPLE_SPAWN_COUNT (5u)
+#define APPLE_SPAWN_MAX (150u)
 
 /**
  * @brief Checks for first press of key, ignores repeats from holding key down.
@@ -70,14 +73,22 @@ int main(int argc, char* argv[])
         TTF_Font* titleFont = openFont(72);
         SDL_Color const white = {255, 255, 255, 255};
 
+        SpawnRule const appleSpawnRule = {APPLE_SPAWN_INTERVAL_MS, APPLE_SPAWN_COUNT, APPLE_SPAWN_MAX};
+
         // Optional so restart can construct new round in place, Player can't be reassigned.
         std::optional<GameRound> round;
-        round.emplace(WINDOW_SIZE, WINDOW_SIZE, APPLE_COUNT, rd);
+        round.emplace(WINDOW_SIZE, WINDOW_SIZE, APPLE_COUNT, appleSpawnRule, rd);
+
+        Uint32 lastTickMs = SDL_GetTicks();
 
         // Key poller.
         while(running)
         {
             bool restart = false;
+
+            Uint32 const nowMs = SDL_GetTicks();
+            Uint32 const deltaMs = nowMs - lastTickMs;
+            lastTickMs = nowMs;
 
             while(SDL_PollEvent(&evt))
             {
@@ -109,7 +120,7 @@ int main(int argc, char* argv[])
 
             if (restart)
             {
-                round.emplace(WINDOW_SIZE, WINDOW_SIZE, APPLE_COUNT, rd);
+                round.emplace(WINDOW_SIZE, WINDOW_SIZE, APPLE_COUNT, appleSpawnRule, rd);
             }
 
             auto& snek = round->snek;
@@ -126,6 +137,13 @@ int main(int argc, char* argv[])
                 }
 
                 snek.checkCollisionSelf();
+
+                // Spawner only advances while playing, game over doesn't count towards next spawn.
+                size_t const applesToSpawn = round->appleSpawner.update(deltaMs, apples.appleCount());
+                if (applesToSpawn > 0)
+                {
+                    apples.spawn(applesToSpawn, snek.getOccupiedCells());
+                }
             }
 
             std::string const score = "Score: " + std::to_string(round->score);
