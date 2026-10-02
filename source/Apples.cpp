@@ -42,10 +42,7 @@ bool Apples::checkAppleCollision(SDL_Rect const& entity)
 
 void Apples::deleteApple(std::vector<AppleData>::iterator entity)
 {
-    if (nullptr != entity->color.texture)
-    {
-        SDL_DestroyTexture(entity->color.texture);
-    }
+    // Texture is shared and owned by Renderer.
     m_apples.erase(entity);
 }
 

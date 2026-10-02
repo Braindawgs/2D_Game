@@ -25,6 +25,11 @@ Renderer::Renderer(int windowW, int windowH)
 
 Renderer::~Renderer()
 {
+    for (auto& [path, texture] : m_textures)
+    {
+        SDL_DestroyTexture(texture);
+    }
+    SDL_DestroyRenderer(m_rndr);
     SDL_DestroyWindow(m_window);
 }
 

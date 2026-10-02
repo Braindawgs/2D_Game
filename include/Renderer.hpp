@@ -26,6 +26,10 @@ class Renderer
          */
         ~Renderer();
 
+        // Owns SDL window, renderer and textures, copying would double free them.
+        Renderer(Renderer const&) = delete;
+        Renderer& operator=(Renderer const&) = delete;
+
 #if 0
         /**
          * @brief Creates a window. 
