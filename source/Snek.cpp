@@ -8,7 +8,6 @@ Player::Player(int windowX, int windowY)
     m_sparts.snekTail.snekTail = {windowX/2, windowY/2+m_snekH, m_snekW, m_snekH};
 
     m_sparts.snekHead.texture = {195, 3, 58, 61, snakeTexture, nullptr};
-    //TODO: Need to load curved textures. Could'ev rotated one -.-
     // Normal 
     m_sparts.snekBody.texture[snekCurveTexture::NONE] = {134, 67, 51, 59, snakeTexture, nullptr};
     // Down - left
@@ -18,17 +17,11 @@ Player::Player(int windowX, int windowY)
     // Up - Right
     m_sparts.snekBody.texture[snekCurveTexture::UP_RIGHT] = {6, 6, 58, 58, snakeTexture, nullptr};
     // Down right
-    m_sparts.snekBody.texture[snekCurveTexture::DOWN_RIGHT] = {6, 63, 58, 58, snakeTexture, nullptr};
+    m_sparts.snekBody.texture[snekCurveTexture::DOWN_RIGHT] = {6, 64, 58, 58, snakeTexture, nullptr};
 
 
     m_sparts.snekTail.texture = {199, 128, 51, 58, snakeTexture, nullptr};
-    m_sparts.snekHead.angle = 0;
-    m_sparts.snekTail.angle = 0;
-
-    for (auto& bodyPart : m_sparts.snekBody.snekBody) 
-    {
-        bodyPart.angle = 0.0;
-    }
+    m_sparts.snekHead.dir = snakeDirection::NONE;
 }
 
 void Player::changeSize(int size)
@@ -105,7 +98,7 @@ void Player::growBody()
     if (m_sparts.snekBody.snekBody.empty())
     {
         // Empty
-        m_sparts.snekBody.snekBody.push_back({{m_sparts.snekTail.snekTail.x, m_sparts.snekTail.snekTail.y, m_snekW, m_snekH}, m_sparts.snekHead.angle});
+        m_sparts.snekBody.snekBody.push_back({{m_sparts.snekTail.snekTail.x, m_sparts.snekTail.snekTail.y, m_snekW, m_snekH}, m_sparts.snekHead.dir});
     }
     else
     {
@@ -114,7 +107,6 @@ void Player::growBody()
 
     m_sparts.snekTail.snekTail.x = m_sparts.snekBody.snekBody.back().snekSingleBodyPart.x;
     m_sparts.snekTail.snekTail.y = m_sparts.snekBody.snekBody.back().snekSingleBodyPart.y;
-    m_sparts.snekTail.angle = m_sparts.snekBody.snekBody.back().angle;
 }
 
 void Player::shrinkBody()
@@ -126,13 +118,11 @@ void Player::shrinkBody()
         {
             m_sparts.snekTail.snekTail.x = m_sparts.snekBody.snekBody.back().snekSingleBodyPart.x;
             m_sparts.snekTail.snekTail.y = m_sparts.snekBody.snekBody.back().snekSingleBodyPart.y;
-            m_sparts.snekTail.angle = m_sparts.snekBody.snekBody.back().angle;
         }
         else
         {
             m_sparts.snekTail.snekTail.x = m_sparts.snekHead.snekHead.x;
             m_sparts.snekTail.snekTail.y = m_sparts.snekHead.snekHead.y;
-            m_sparts.snekTail.angle = m_sparts.snekHead.angle;
         }
     }
 }
@@ -207,30 +197,28 @@ void Player::updateMovement()
             {
                 m_sparts.snekBody.snekBody[it].snekSingleBodyPart.x = m_sparts.snekBody.snekBody[it - 1].snekSingleBodyPart.x;
                 m_sparts.snekBody.snekBody[it].snekSingleBodyPart.y = m_sparts.snekBody.snekBody[it - 1].snekSingleBodyPart.y;
-                m_sparts.snekBody.snekBody[it].angle = m_sparts.snekBody.snekBody[it - 1].angle;
+                m_sparts.snekBody.snekBody[it].dir = m_sparts.snekBody.snekBody[it - 1].dir;
             }
 
             // First segment to head
             m_sparts.snekBody.snekBody[0].snekSingleBodyPart.x = m_sparts.snekHead.snekHead.x;
             m_sparts.snekBody.snekBody[0].snekSingleBodyPart.y = m_sparts.snekHead.snekHead.y;
-            m_sparts.snekBody.snekBody[0].angle = m_sparts.snekHead.angle;
+            m_sparts.snekBody.snekBody[0].dir = m_sparts.snekHead.dir;
 
             // Tail to last segment
             m_sparts.snekTail.snekTail.x = m_sparts.snekBody.snekBody.back().snekSingleBodyPart.x;
             m_sparts.snekTail.snekTail.y = m_sparts.snekBody.snekBody.back().snekSingleBodyPart.y;
-            m_sparts.snekTail.angle = m_sparts.snekBody.snekBody.back().angle; 
         }
         else
         {
             m_sparts.snekTail.snekTail.x = m_sparts.snekHead.snekHead.x;
             m_sparts.snekTail.snekTail.y = m_sparts.snekHead.snekHead.y;
-            m_sparts.snekTail.angle = m_sparts.snekHead.angle;
         }
     }
 
     m_sparts.snekHead.snekHead.x += m_speedX * 1;
     m_sparts.snekHead.snekHead.y += m_speedY * 1;
-    m_sparts.snekHead.angle = m_angle;
+    m_sparts.snekHead.dir = m_dir;
 
 }
 
@@ -265,40 +253,100 @@ void Player::renderSnake(Renderer& rd)
     auto snekBodyTexture = getSnekBodyTexture();
     auto snekTailTexture = getSnekTailTexture();
 
-    rd.renderFromSpriteWithRotation(snekHeadTexture.texture, snekHeadTexture.spriteX, snekHeadTexture.spriteY, 
+    rd.renderFromSpriteWithRotation(snekHeadTexture.texture, snekHeadTexture.spriteX, snekHeadTexture.spriteY,
                         snekHeadTexture.spriteW, snekHeadTexture.spriteH,
-                        m_sparts.snekHead.snekHead.x, m_sparts.snekHead.snekHead.y, m_sparts.snekHead.snekHead.w, m_sparts.snekHead.snekHead.h, m_sparts.snekHead.angle);
+                        m_sparts.snekHead.snekHead.x, m_sparts.snekHead.snekHead.y, m_sparts.snekHead.snekHead.w, m_sparts.snekHead.snekHead.h,
+                        directionToMovement(m_sparts.snekHead.dir).angle);
 
-    if (!m_sparts.snekBody.snekBody.empty())
+    auto const& body = m_sparts.snekBody.snekBody;
+    for (size_t it = 0; it < body.size(); it++)
     {
-        snekCurveTexture curve = snekCurveTexture::NONE;
-        double angle = 0;
-        bool firstToHead = true;
-        
-        for (int it = 0; it < m_sparts.snekBody.snekBody.size(); it++)
-        {
-            rd.renderFromSpriteWithRotation(snekBodyTexture[curve].texture, snekBodyTexture[curve].spriteX, snekBodyTexture[curve].spriteY, 
-                                            snekBodyTexture[curve].spriteW, snekBodyTexture[curve].spriteH, 
-                                            m_sparts.snekBody.snekBody[it].snekSingleBodyPart.x, m_sparts.snekBody.snekBody[it].snekSingleBodyPart.y,
-                                            m_sparts.snekBody.snekBody[it].snekSingleBodyPart.w, m_sparts.snekBody.snekBody[it].snekSingleBodyPart.h, m_sparts.snekBody.snekBody[it].angle);
-        }
+        // Snake left this segment in direction of the part in front of it.
+        snakeDirection const outDir = (0 == it) ? m_sparts.snekHead.dir : body[it - 1].dir;
+        snekCurveTexture const curve = getSnekCurve(body[it].dir, outDir);
 
+        // Curve textures are already drawn for their turn, only straight one is rotated.
+        double const angle = (snekCurveTexture::NONE == curve) ? directionToMovement(body[it].dir).angle : 0;
+
+        rd.renderFromSpriteWithRotation(snekBodyTexture[curve].texture, snekBodyTexture[curve].spriteX, snekBodyTexture[curve].spriteY,
+                                        snekBodyTexture[curve].spriteW, snekBodyTexture[curve].spriteH,
+                                        body[it].snekSingleBodyPart.x, body[it].snekSingleBodyPart.y,
+                                        body[it].snekSingleBodyPart.w, body[it].snekSingleBodyPart.h, angle);
     }
 
-    rd.renderFromSpriteWithRotation(snekTailTexture.texture, snekTailTexture.spriteX, snekTailTexture.spriteY, 
+    rd.renderFromSpriteWithRotation(snekTailTexture.texture, snekTailTexture.spriteX, snekTailTexture.spriteY,
                     snekTailTexture.spriteW, snekTailTexture.spriteH,
-                    m_sparts.snekTail.snekTail.x, m_sparts.snekTail.snekTail.y, m_sparts.snekTail.snekTail.w, m_sparts.snekTail.snekTail.h,  m_sparts.snekTail.angle);
+                    m_sparts.snekTail.snekTail.x, m_sparts.snekTail.snekTail.y, m_sparts.snekTail.snekTail.w, m_sparts.snekTail.snekTail.h,
+                    directionToMovement(getSnekTailDirection()).angle);
 }
 
-snekCurveTexture Player::getSnekCurve(int anglePrev)
+snekCurveTexture Player::getSnekCurve(snakeDirection inDir, snakeDirection outDir)
 {
     snekCurveTexture curve = snekCurveTexture::NONE;
-    
-    switch(m_dir)
+
+    // Each curve texture covers two turns, one clockwise and one counter clockwise.
+    // Straight segments and 180 turns have no curve texture.
+    switch(inDir)
     {
-        
+        case snakeDirection::UP:
+        {
+            if (snakeDirection::RIGHT == outDir)
+            {
+                curve = snekCurveTexture::UP_RIGHT;
+            }
+            else if (snakeDirection::LEFT == outDir)
+            {
+                curve = snekCurveTexture::UP_LEFT;
+            }
+        }
+        break;
+        case snakeDirection::DOWN:
+        {
+            if (snakeDirection::RIGHT == outDir)
+            {
+                curve = snekCurveTexture::DOWN_RIGHT;
+            }
+            else if (snakeDirection::LEFT == outDir)
+            {
+                curve = snekCurveTexture::DOWN_LEFT;
+            }
+        }
+        break;
+        case snakeDirection::LEFT:
+        {
+            if (snakeDirection::UP == outDir)
+            {
+                curve = snekCurveTexture::DOWN_RIGHT;
+            }
+            else if (snakeDirection::DOWN == outDir)
+            {
+                curve = snekCurveTexture::UP_RIGHT;
+            }
+        }
+        break;
+        case snakeDirection::RIGHT:
+        {
+            if (snakeDirection::UP == outDir)
+            {
+                curve = snekCurveTexture::DOWN_LEFT;
+            }
+            else if (snakeDirection::DOWN == outDir)
+            {
+                curve = snekCurveTexture::UP_LEFT;
+            }
+        }
+        break;
+        default:
+        break;
     }
 
     return curve;
-    
+}
+
+snakeDirection Player::getSnekTailDirection() const
+{
+    auto const& body = m_sparts.snekBody.snekBody;
+
+    // Tail sits on last body segment, snake left it towards second to last segment, or head.
+    return (body.size() >= 2) ? body[body.size() - 2].dir : m_sparts.snekHead.dir;
 }

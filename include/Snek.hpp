@@ -10,6 +10,8 @@
 
 namespace Snek
 {
+    // Body texture index, named by direction snake entered segment and direction it left it.
+    // Turns in opposite rotation use same texture, e.g. LEFT then DOWN also uses UP_RIGHT.
     enum snekCurveTexture
     {
         NONE = 0,
@@ -22,13 +24,14 @@ namespace Snek
     struct SnekSingleBody
     {
         SDL_Rect snekSingleBodyPart;
-        double angle;
+        // Direction snake was moving when it entered this segment.
+        snakeDirection dir;
     };
 
     struct SnekHead
     {
         SDL_Rect snekHead;
-        double angle;
+        snakeDirection dir;
         spriteTexture texture;
     };
 
@@ -38,10 +41,10 @@ namespace Snek
         spriteTexture texture[5];
     };
 
+    // Tail direction is taken from body at render time, see getSnekTailDirection().
     struct SnekTail
     {
         SDL_Rect snekTail;
-        double angle;
         spriteTexture texture;
     };
 
@@ -117,8 +120,6 @@ namespace Snek
         void setAngle(double angl);
         double getAngle();
 
-        snekCurveTexture getSnekCurve(int anglePrev);
-
         void snekSetSize(unsigned int size);
         void snekChangeSize(int dsize);
         
@@ -155,6 +156,23 @@ namespace Snek
          * @return SDL_Rect& Reference to snake tail.
          */
         SDL_Rect& getSnekTail();
+
+        /**
+         * @brief Get body texture for segment based on how snake moved through it.
+         *
+         * @param inDir Direction snake entered segment.
+         * @param outDir Direction snake left segment.
+         * @return snekCurveTexture Curve texture, NONE for straight segment.
+         */
+        static snekCurveTexture getSnekCurve(snakeDirection inDir, snakeDirection outDir);
+
+        /**
+         * @brief Get the Snek Tail direction.
+         * Tail is drawn over last body segment, so it points where snake left that segment.
+         *
+         * @return snakeDirection Tail direction.
+         */
+        snakeDirection getSnekTailDirection() const;
 
         /**
          * @brief Get the Snek Body object.
